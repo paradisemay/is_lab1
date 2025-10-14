@@ -51,7 +51,7 @@ class MusicBandRestControllerTest {
         form.setName("Testing Band");
         form.setImpactSpeed(new BigDecimal("3.50"));
         form.setSoundtrackName("Testing Soundtrack");
-        form.setMood(Mood.CALM);
+        form.setMood(Mood.SADNESS);
         form.setCarId(carId);
 
         String response = mockMvc.perform(post("/api/bands")
@@ -94,26 +94,26 @@ class MusicBandRestControllerTest {
 
     @Test
     void bulkMoodUpdateChangesRecords() throws Exception {
-        MusicBandFormDto angry = new MusicBandFormDto();
-        angry.setName("Angry Band");
-        angry.setImpactSpeed(new BigDecimal("4.00"));
-        angry.setSoundtrackName("Rage");
-        angry.setMood(Mood.ANGRY);
+        MusicBandFormDto gloomy = new MusicBandFormDto();
+        gloomy.setName("Gloomy Band");
+        gloomy.setImpactSpeed(new BigDecimal("4.00"));
+        gloomy.setSoundtrackName("Rage");
+        gloomy.setMood(Mood.GLOOM);
         mockMvc.perform(post("/api/bands")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(angry)))
+                        .content(objectMapper.writeValueAsString(gloomy)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/bands/mood/bulk")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
-                                "\"sourceMood\":\"ANGRY\"," +
-                                "\"targetMood\":\"HAPPY\"}"))
+                                "\"sourceMood\":\"GLOOM\"," +
+                                "\"targetMood\":\"LONGING\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("1"));
 
         String body = mockMvc.perform(get("/api/bands")
-                        .param("mood", Mood.HAPPY.name()))
+                        .param("mood", Mood.LONGING.name()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
