@@ -9,13 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ifmo.se.is_lab1.domain.Mood;
-import ru.ifmo.se.is_lab1.dto.MusicBandFormDto;
-import ru.ifmo.se.is_lab1.service.CarService;
-import ru.ifmo.se.is_lab1.service.event.MusicBandEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
+import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
+import ru.ifmo.se.is_lab1.model.Car;
+import ru.ifmo.se.is_lab1.model.Mood;
+import ru.ifmo.se.is_lab1.model.WeaponType;
+import ru.ifmo.se.is_lab1.repository.LegacyCarRepository;
+import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class MusicBandRestControllerTest {
+class HumanBeingRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,28 +33,34 @@ class MusicBandRestControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CarService carService;
+    private LegacyCarRepository carRepository;
 
     @MockBean
-    private MusicBandEventPublisher eventPublisher;
+    private HumanBeingEventPublisher eventPublisher;
 
     private Long carId;
 
     @BeforeEach
     void setUp() {
-        carId = carService.create("Lada", "2107", "Синий").getId();
+        carId = carRepository.save(new Car("Lada", true)).getId();
     }
 
     @Test
-    void createAndFetchBand() throws Exception {
-        MusicBandFormDto form = new MusicBandFormDto();
-        form.setName("Testing Band");
-        form.setImpactSpeed(new BigDecimal("3.50"));
+    void createAndFetchHuman() throws Exception {
+        HumanBeingFormDto form = new HumanBeingFormDto();
+        form.setName("Testing Human");
+        form.setCoordinateX(10.0);
+        form.setCoordinateY(20.0);
+        form.setRealHero(true);
+        form.setHasToothpick(Boolean.TRUE);
+        form.setImpactSpeed(3.5);
         form.setSoundtrackName("Testing Soundtrack");
+        form.setMinutesOfWaiting(12L);
         form.setMood(Mood.CALM);
+        form.setWeaponType(WeaponType.BAT);
         form.setCarId(carId);
 
-        String response = mockMvc.perform(post("/api/bands")
+        String response = mockMvc.perform(post("/api/humans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isOk())
@@ -63,29 +69,29 @@ class MusicBandRestControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var created = objectMapper.readTree(response);
-        long id = created.get("id").asLong();
+        long id = objectMapper.readTree(response).get("id").asLong();
 
-        mockMvc.perform(get("/api/bands/{id}", id))
+        mockMvc.perform(get("/api/humans/{id}", id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Testing Band"))
+                .andExpect(jsonPath("$.name").value("Testing Human"))
                 .andExpect(jsonPath("$.car.name").value("Lada"));
 
-        mockMvc.perform(get("/api/bands")
-                        .param("soundtrackPrefix", "Test"))
+        mockMvc.perform(get("/api/humans")
+                        .param("name", "Test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(id));
     }
 
     @Test
     void validationErrorsAreReturned() throws Exception {
-        MusicBandFormDto form = new MusicBandFormDto();
+        HumanBeingFormDto form = new HumanBeingFormDto();
         form.setName("");
-        form.setImpactSpeed(new BigDecimal("-1"));
+        form.setHasToothpick(null);
+        form.setImpactSpeed(1000.0);
         form.setSoundtrackName("");
-        form.setMood(null);
+        form.setMinutesOfWaiting(null);
 
-        mockMvc.perform(post("/api/bands")
+        mockMvc.perform(post("/api/humans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isBadRequest())
@@ -94,26 +100,31 @@ class MusicBandRestControllerTest {
 
     @Test
     void bulkMoodUpdateChangesRecords() throws Exception {
-        MusicBandFormDto angry = new MusicBandFormDto();
-        angry.setName("Angry Band");
-        angry.setImpactSpeed(new BigDecimal("4.00"));
+        HumanBeingFormDto angry = new HumanBeingFormDto();
+        angry.setName("Angry Human");
+        angry.setCoordinateX(1.0);
+        angry.setCoordinateY(2.0);
+        angry.setRealHero(false);
+        angry.setHasToothpick(Boolean.FALSE);
+        angry.setImpactSpeed(4.0);
         angry.setSoundtrackName("Rage");
-        angry.setMood(Mood.ANGRY);
-        mockMvc.perform(post("/api/bands")
+        angry.setMinutesOfWaiting(5L);
+        angry.setMood(Mood.SORROW);
+        mockMvc.perform(post("/api/humans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(angry)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/bands/mood/bulk")
+        mockMvc.perform(post("/api/humans/mood/bulk")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
-                                "\"sourceMood\":\"ANGRY\"," +
-                                "\"targetMood\":\"HAPPY\"}"))
+                                "\"sourceMood\":\"SORROW\"," +
+                                "\"targetMood\":\"RAGE\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("1"));
 
-        String body = mockMvc.perform(get("/api/bands")
-                        .param("mood", Mood.HAPPY.name()))
+        String body = mockMvc.perform(get("/api/humans")
+                        .param("mood", Mood.RAGE.name()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

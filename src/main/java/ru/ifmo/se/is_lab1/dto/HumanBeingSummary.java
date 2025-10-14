@@ -1,12 +1,10 @@
 package ru.ifmo.se.is_lab1.dto;
 
-import java.math.BigDecimal;
-
-public class MusicBandSummary {
+public class HumanBeingSummary {
     private final long totalCount;
-    private final BigDecimal totalImpactSpeed;
+    private final double totalImpactSpeed;
 
-    public MusicBandSummary(long totalCount, BigDecimal totalImpactSpeed) {
+    public HumanBeingSummary(long totalCount, double totalImpactSpeed) {
         this.totalCount = totalCount;
         this.totalImpactSpeed = totalImpactSpeed;
     }
@@ -15,7 +13,7 @@ public class MusicBandSummary {
         return totalCount;
     }
 
-    public BigDecimal getTotalImpactSpeed() {
+    public double getTotalImpactSpeed() {
         return totalImpactSpeed;
     }
 }

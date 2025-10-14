@@ -11,7 +11,7 @@
         }
         const page = parseInt(pagination.getAttribute('data-page'), 10) || 0;
         const size = parseInt(pagination.getAttribute('data-size'), 10) || 10;
-        const totalPages = parseInt(document.getElementById('bands-table')?.getAttribute('data-total-pages') || '0', 10);
+        const totalPages = parseInt(document.getElementById('humans-table')?.getAttribute('data-total-pages') || '0', 10);
         pagination.querySelectorAll('.page-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const direction = button.getAttribute('data-direction');
@@ -31,7 +31,7 @@
 
     function setupWebSocket() {
         const sumEl = document.getElementById('impact-sum');
-        const countEl = document.getElementById('band-count');
+        const countEl = document.getElementById('human-count');
         if (!sumEl || typeof SockJS === 'undefined' || typeof Stomp === 'undefined') {
             return;
         }
@@ -39,9 +39,9 @@
         const stompClient = Stomp.over(socket);
         stompClient.debug = () => {};
         stompClient.connect({}, () => {
-            const requestSummary = () => stompClient.send('/app/bands/summary', {});
-            stompClient.subscribe('/topic/bands', () => requestSummary());
-            stompClient.subscribe('/topic/bands-summary', message => {
+            const requestSummary = () => stompClient.send('/app/humans/summary', {});
+            stompClient.subscribe('/topic/humans', () => requestSummary());
+            stompClient.subscribe('/topic/humans-summary', message => {
                 try {
                     const payload = JSON.parse(message.body);
                     if (payload.totalImpactSpeed !== undefined) {

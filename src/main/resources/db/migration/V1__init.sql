@@ -1,22 +1,3 @@
-CREATE TABLE cars (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    model VARCHAR(255),
-    color VARCHAR(64)
-);
-
-CREATE TABLE music_bands (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    impact_speed NUMERIC(10,2) NOT NULL,
-    soundtrack_name VARCHAR(255) NOT NULL,
-    mood VARCHAR(32) NOT NULL,
-    creation_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    car_id BIGINT REFERENCES cars(id)
-);
-
-CREATE INDEX idx_music_bands_mood ON music_bands (mood);
-CREATE INDEX idx_music_bands_soundtrack ON music_bands (soundtrack_name);
 CREATE TABLE coordinates (
     id           BIGSERIAL PRIMARY KEY,
     x            DOUBLE PRECISION NOT NULL,
@@ -49,3 +30,6 @@ CREATE TABLE human_being (
 
 CREATE INDEX human_being_coordinates_idx ON human_being (coordinates_id);
 CREATE INDEX human_being_car_idx ON human_being (car_id);
+CREATE INDEX human_being_mood_idx ON human_being (mood);
+CREATE INDEX human_being_weapon_idx ON human_being (weapon_type);
+CREATE INDEX human_being_soundtrack_idx ON human_being (soundtrack_name);

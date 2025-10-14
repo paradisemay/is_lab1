@@ -2,24 +2,24 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 <head>
     <meta charset="UTF-8">
-    <title th:replace="~{::title}">Music Bands</title>
+    <title th:replace="~{::title}">Human Beings</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    <script th:src="@{/js/bands.js}" defer></script>
+    <script th:src="@{/js/humans.js}" defer></script>
 </head>
 <body>
 <div class="page-wrapper">
     <header class="page-header">
-        <h1>Музыкальные группы</h1>
+        <h1>Люди</h1>
         <nav>
-            <a th:href="@{/bands}">Список</a>
-            <a th:href="@{/bands/create}">Создать</a>
+            <a th:href="@{/humans}">Список</a>
+            <a th:href="@{/humans/create}">Создать</a>
         </nav>
     </header>
     <main th:replace="${content}"></main>
     <footer class="page-footer">
-        <p>&copy; 2024 Музыкальные группы</p>
+        <p>&copy; 2024 Сервис учёта людей</p>
     </footer>
 </div>
 </body>

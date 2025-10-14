@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:replace="fragments/layout :: layout(~{::body})">
+<body>
+<section class="content">
+    <header class="section-header">
+        <h2>Список людей</h2>
+        <div class="summary">
+            <span>Всего людей: <strong id="human-count" th:text="${humans.totalElements}"></strong></span>
+            <span>Суммарная скорость: <strong id="impact-sum" th:text="${sumImpactSpeed}"></strong></span>
+        </div>
+    </header>
+
+    <form class="filter-form" method="get">
+        <div class="form-row">
+            <label>Имя
+                <input type="text" name="name" th:value="${filter.name}">
+            </label>
+            <label>Настроение
+                <select name="mood">
+                    <option value="" th:selected="${filter.mood == null}">Любое</option>
+                    <option th:each="m : ${moods}"
+                            th:value="${m}"
+                            th:text="${m}"
+                            th:selected="${filter.mood == m}"></option>
+                </select>
+            </label>
+            <label>Оружие
+                <select name="weaponType">
+                    <option value="" th:selected="${filter.weaponType == null}">Любое</option>
+                    <option th:each="weapon : ${weaponTypes}"
+                            th:value="${weapon}"
+                            th:text="${weapon}"
+                            th:selected="${filter.weaponType == weapon}"></option>
+                </select>
+            </label>
+            <label>Герой
+                <select name="realHero">
+                    <option value="" th:selected="${filter.realHero == null}">Все</option>
+                    <option value="true" th:selected="${filter.realHero != null and filter.realHero}">Да</option>
+                    <option value="false" th:selected="${filter.realHero != null and !filter.realHero}">Нет</option>
+                </select>
+            </label>
+            <label>Зубочистка
+                <select name="hasToothpick">
+                    <option value="" th:selected="${filter.hasToothpick == null}">Все</option>
+                    <option value="true" th:selected="${filter.hasToothpick != null and filter.hasToothpick}">Да</option>
+                    <option value="false" th:selected="${filter.hasToothpick != null and !filter.hasToothpick}">Нет</option>
+                </select>
+            </label>
+            <label>Автомобиль
+                <select name="carId">
+                    <option value="" th:selected="${filter.carId == null}">Любой</option>
+                    <option th:each="car : ${cars}"
+                            th:value="${car.id}"
+                            th:text="${car.name}"
+                            th:selected="${filter.carId != null and filter.carId == car.id}"></option>
+                </select>
+            </label>
+        </div>
+        <div class="form-row">
+            <label>Мин. скорость
+                <input type="number" step="0.01" name="minImpactSpeed" th:value="${filter.minImpactSpeed}">
+            </label>
+            <label>Макс. скорость
+                <input type="number" step="0.01" name="maxImpactSpeed" th:value="${filter.maxImpactSpeed}">
+            </label>
+            <label>Мин. ожидание
+                <input type="number" name="minMinutesOfWaiting" th:value="${filter.minMinutesOfWaiting}">
+            </label>
+            <label>Макс. ожидание
+                <input type="number" name="maxMinutesOfWaiting" th:value="${filter.maxMinutesOfWaiting}">
+            </label>
+            <button type="submit" class="button">Применить</button>
+            <a class="button secondary" th:href="@{/humans}">Сбросить</a>
+        </div>
+    </form>
+
+    <table class="data-table" id="humans-table" data-total-pages="" th:attr="data-total-pages=${humans.totalPages}">
+        <thead>
+        <tr>
+            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=id&direction=${direction}|}">ID</a></th>
+            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=name&direction=${direction}|}">Имя</a></th>
+            <th>Координаты</th>
+            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=impactSpeed&direction=${direction}|}">Скорость</a></th>
+            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=minutesOfWaiting&direction=${direction}|}">Ожидание</a></th>
+            <th>Оружие</th>
+            <th>Настроение</th>
+            <th>Автомобиль</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="human : ${humans.content}">
+            <td th:text="${human.id}"></td>
+            <td th:text="${human.name}"></td>
+            <td th:text="${human.coordinates != null ? '(' + human.coordinates.x + ', ' + human.coordinates.y + ')' : '-'}"></td>
+            <td th:text="${human.impactSpeed}"></td>
+            <td th:text="${human.minutesOfWaiting}"></td>
+            <td th:text="${human.weaponType != null ? human.weaponType : '-'}"></td>
+            <td th:text="${human.mood != null ? human.mood : '-'}"></td>
+            <td th:text="${human.car != null ? human.car.name : '-'}"></td>
+            <td>
+                <a th:href="@{|/humans/${human.id}|}">Просмотр</a>
+                <a th:href="@{|/humans/${human.id}/edit|}">Изменить</a>
+            </td>
+        </tr>
+        <tr th:if="${humans.content.isEmpty()}">
+            <td colspan="9">Нет данных</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" th:attr="data-page=${humans.number},data-size=${humans.size}">
+        <button type="button" class="page-btn" data-direction="prev" th:disabled="${humans.first}">Назад</button>
+        <span>Страница <strong th:text="${humans.number + 1}"></strong> из
+            <strong th:text="${humans.totalPages == 0 ? 1 : humans.totalPages}"></strong></span>
+        <button type="button" class="page-btn" data-direction="next" th:disabled="${humans.last}">Вперёд</button>
+    </div>
+</section>
+</body>
+</html>

@@ -4,15 +4,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MusicBandEventPublisher {
+public class HumanBeingEventPublisher {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public MusicBandEventPublisher(SimpMessagingTemplate messagingTemplate) {
+    public HumanBeingEventPublisher(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void publish(MusicBandEvent event) {
-        messagingTemplate.convertAndSend("/topic/bands", event);
+    public void publish(HumanBeingEvent event) {
+        messagingTemplate.convertAndSend("/topic/humans", event);
     }
 }

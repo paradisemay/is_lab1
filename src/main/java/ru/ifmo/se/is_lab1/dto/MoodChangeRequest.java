@@ -1,7 +1,7 @@
 package ru.ifmo.se.is_lab1.dto;
 
 import jakarta.validation.constraints.NotNull;
-import ru.ifmo.se.is_lab1.domain.Mood;
+import ru.ifmo.se.is_lab1.model.Mood;
 
 public class MoodChangeRequest {
 

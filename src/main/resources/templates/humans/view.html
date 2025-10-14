@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:replace="fragments/layout :: layout(~{::body})">
+<body>
+<section class="content">
+    <article class="detail-card">
+        <header>
+            <h2 th:text="${human.name}">Имя</h2>
+            <div class="actions">
+                <a class="button" th:href="@{|/humans/${human.id}/edit|}">Редактировать</a>
+                <a class="button secondary" th:href="@{/humans}">К списку</a>
+            </div>
+        </header>
+        <dl>
+            <dt>ID</dt>
+            <dd th:text="${human.id}"></dd>
+
+            <dt>Дата создания</dt>
+            <dd th:text="${#temporals.format(human.creationDate, 'dd.MM.yyyy HH:mm')}"></dd>
+
+            <dt>Координаты</dt>
+            <dd th:text="${human.coordinates != null ? '(' + human.coordinates.x + ', ' + human.coordinates.y + ')' : '-'}"></dd>
+
+            <dt>Настоящий герой</dt>
+            <dd th:text="${human.realHero ? 'Да' : 'Нет'}"></dd>
+
+            <dt>Зубочистка</dt>
+            <dd th:text="${human.hasToothpick != null && human.hasToothpick ? 'Да' : 'Нет'}"></dd>
+
+            <dt>Скорость</dt>
+            <dd th:text="${human.impactSpeed}"></dd>
+
+            <dt>Саундтрек</dt>
+            <dd th:text="${human.soundtrackName}"></dd>
+
+            <dt>Время ожидания</dt>
+            <dd th:text="${human.minutesOfWaiting}"></dd>
+
+            <dt>Оружие</dt>
+            <dd th:text="${human.weaponType != null ? human.weaponType : '-'}"></dd>
+
+            <dt>Настроение</dt>
+            <dd th:text="${human.mood != null ? human.mood : '-'}"></dd>
+
+            <dt>Автомобиль</dt>
+            <dd th:text="${human.car != null ? human.car.name : 'Нет'}"></dd>
+        </dl>
+    </article>
+</section>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:replace="fragments/layout :: layout(~{::body})">
+<body>
+<section class="content">
+    <h2>Создание записи</h2>
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <form th:action="@{/humans}" th:object="${human}" method="post" class="form-card">
+        <div class="form-row">
+            <label>Имя
+                <input type="text" th:field="*{name}">
+                <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+            </label>
+            <label>Координата X
+                <input type="number" step="0.01" th:field="*{coordinateX}">
+                <span class="error" th:if="${#fields.hasErrors('coordinateX')}" th:errors="*{coordinateX}"></span>
+            </label>
+            <label>Координата Y
+                <input type="number" step="0.01" th:field="*{coordinateY}">
+                <span class="error" th:if="${#fields.hasErrors('coordinateY')}" th:errors="*{coordinateY}"></span>
+            </label>
+        </div>
+        <div class="form-row">
+            <label>
+                <input type="checkbox" th:field="*{realHero}">
+                Настоящий герой
+            </label>
+            <label>Наличие зубочистки
+                <select th:field="*{hasToothpick}">
+                    <option th:value="true">Да</option>
+                    <option th:value="false">Нет</option>
+                </select>
+                <span class="error" th:if="${#fields.hasErrors('hasToothpick')}" th:errors="*{hasToothpick}"></span>
+            </label>
+            <label>Скорость
+                <input type="number" step="0.01" th:field="*{impactSpeed}">
+                <span class="error" th:if="${#fields.hasErrors('impactSpeed')}" th:errors="*{impactSpeed}"></span>
+            </label>
+        </div>
+        <div class="form-row">
+            <label>Саундтрек
+                <input type="text" th:field="*{soundtrackName}">
+                <span class="error" th:if="${#fields.hasErrors('soundtrackName')}" th:errors="*{soundtrackName}"></span>
+            </label>
+            <label>Ожидание (мин)
+                <input type="number" th:field="*{minutesOfWaiting}">
+                <span class="error" th:if="${#fields.hasErrors('minutesOfWaiting')}" th:errors="*{minutesOfWaiting}"></span>
+            </label>
+            <label>Оружие
+                <select th:field="*{weaponType}">
+                    <option value="">Не выбрано</option>
+                    <option th:each="weapon : ${weaponTypes}"
+                            th:value="${weapon}"
+                            th:text="${weapon}"></option>
+                </select>
+            </label>
+        </div>
+        <div class="form-row">
+            <label>Настроение
+                <select th:field="*{mood}">
+                    <option value="">Не выбрано</option>
+                    <option th:each="m : ${moods}" th:value="${m}" th:text="${m}"></option>
+                </select>
+            </label>
+            <label>Автомобиль
+                <select th:field="*{carId}">
+                    <option value="">Без автомобиля</option>
+                    <option th:each="car : ${cars}" th:value="${car.id}" th:text="${car.name}"></option>
+                </select>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button">Создать</button>
+            <a class="button secondary" th:href="@{/humans}">Отмена</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>
