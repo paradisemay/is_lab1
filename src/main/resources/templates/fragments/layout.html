@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
 <head>
     <meta charset="UTF-8">
-    <title th:replace="~{::title}">Music Bands</title>
+    <title th:replace="${title}">Music Bands</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
