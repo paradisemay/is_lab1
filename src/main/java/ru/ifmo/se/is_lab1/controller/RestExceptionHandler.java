@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@ControllerAdvice(assignableTypes = {MusicBandRestController.class})
+@ControllerAdvice(assignableTypes = {HumanBeingRestController.class})
 public class RestExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)

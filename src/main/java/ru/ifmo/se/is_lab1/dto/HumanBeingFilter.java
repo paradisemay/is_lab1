@@ -1,17 +1,20 @@
 package ru.ifmo.se.is_lab1.dto;
 
-import ru.ifmo.se.is_lab1.domain.Mood;
-
-import java.math.BigDecimal;
 import java.util.Optional;
 
-public class MusicBandFilter {
+import ru.ifmo.se.is_lab1.model.Mood;
+import ru.ifmo.se.is_lab1.model.WeaponType;
+
+public class HumanBeingFilter {
     private String name;
     private Mood mood;
-    private BigDecimal minImpactSpeed;
-    private BigDecimal maxImpactSpeed;
+    private Integer minImpactSpeed;
+    private Integer maxImpactSpeed;
     private String soundtrackPrefix;
     private Long carId;
+    private Boolean realHero;
+    private Boolean hasToothpick;
+    private WeaponType weaponType;
 
     public Optional<String> nameOptional() {
         return Optional.ofNullable(name);
@@ -37,27 +40,27 @@ public class MusicBandFilter {
         this.mood = mood;
     }
 
-    public Optional<BigDecimal> minImpactSpeedOptional() {
+    public Optional<Integer> minImpactSpeedOptional() {
         return Optional.ofNullable(minImpactSpeed);
     }
 
-    public BigDecimal getMinImpactSpeed() {
+    public Integer getMinImpactSpeed() {
         return minImpactSpeed;
     }
 
-    public void setMinImpactSpeed(BigDecimal minImpactSpeed) {
+    public void setMinImpactSpeed(Integer minImpactSpeed) {
         this.minImpactSpeed = minImpactSpeed;
     }
 
-    public Optional<BigDecimal> maxImpactSpeedOptional() {
+    public Optional<Integer> maxImpactSpeedOptional() {
         return Optional.ofNullable(maxImpactSpeed);
     }
 
-    public BigDecimal getMaxImpactSpeed() {
+    public Integer getMaxImpactSpeed() {
         return maxImpactSpeed;
     }
 
-    public void setMaxImpactSpeed(BigDecimal maxImpactSpeed) {
+    public void setMaxImpactSpeed(Integer maxImpactSpeed) {
         this.maxImpactSpeed = maxImpactSpeed;
     }
 
@@ -83,5 +86,41 @@ public class MusicBandFilter {
 
     public void setCarId(Long carId) {
         this.carId = carId;
+    }
+
+    public Optional<Boolean> realHeroOptional() {
+        return Optional.ofNullable(realHero);
+    }
+
+    public Boolean getRealHero() {
+        return realHero;
+    }
+
+    public void setRealHero(Boolean realHero) {
+        this.realHero = realHero;
+    }
+
+    public Optional<Boolean> hasToothpickOptional() {
+        return Optional.ofNullable(hasToothpick);
+    }
+
+    public Boolean getHasToothpick() {
+        return hasToothpick;
+    }
+
+    public void setHasToothpick(Boolean hasToothpick) {
+        this.hasToothpick = hasToothpick;
+    }
+
+    public Optional<WeaponType> weaponTypeOptional() {
+        return Optional.ofNullable(weaponType);
+    }
+
+    public WeaponType getWeaponType() {
+        return weaponType;
+    }
+
+    public void setWeaponType(WeaponType weaponType) {
+        this.weaponType = weaponType;
     }
 }

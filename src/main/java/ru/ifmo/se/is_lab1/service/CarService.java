@@ -2,10 +2,10 @@ package ru.ifmo.se.is_lab1.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ifmo.se.is_lab1.domain.Car;
 import ru.ifmo.se.is_lab1.dto.CarDto;
 import ru.ifmo.se.is_lab1.mapper.CarMapper;
 import ru.ifmo.se.is_lab1.repository.CarRepository;
+import ru.ifmo.se.is_lab1.model.Car;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,20 +34,16 @@ public class CarService {
     }
 
     @Transactional
-    public CarDto create(String name, String model, String color) {
-        Car car = new Car();
-        car.setName(name);
-        car.setModel(model);
-        car.setColor(color);
+    public CarDto create(String name, Boolean cool) {
+        Car car = new Car(name, cool);
         return carMapper.toDto(carRepository.save(car));
     }
 
     @Transactional
-    public CarDto update(Long id, String name, String model, String color) {
+    public CarDto update(Long id, String name, Boolean cool) {
         Car car = getEntity(id);
         car.setName(name);
-        car.setModel(model);
-        car.setColor(color);
+        car.setCool(cool);
         return carMapper.toDto(car);
     }
 

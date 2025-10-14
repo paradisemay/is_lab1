@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru" th:replace="fragments/layout :: layout(~{::title}, ~{::section})">
+<head>
+    <title>Просмотр человека</title>
+</head>
+<body>
+<section>
+    <div class="detail-card">
+        <h2 th:text="${human.name}">Человек</h2>
+        <dl>
+            <div>
+                <dt>ID</dt>
+                <dd th:text="${human.id}"></dd>
+            </div>
+            <div>
+                <dt>Координаты</dt>
+                <dd th:text="${human.coordinates != null ? '(' + human.coordinates.x + '; ' + human.coordinates.y + ')' : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Настоящий герой</dt>
+                <dd th:text="${human.realHero != null ? (human.realHero ? 'Да' : 'Нет') : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Скорость удара</dt>
+                <dd th:text="${human.impactSpeed}"></dd>
+            </div>
+            <div>
+                <dt>Саундтрек</dt>
+                <dd th:text="${human.soundtrackName}"></dd>
+            </div>
+            <div>
+                <dt>Оружие</dt>
+                <dd th:text="${human.weaponType != null ? human.weaponType : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Настроение</dt>
+                <dd th:text="${human.mood != null ? human.mood : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Есть зубочистка</dt>
+                <dd th:text="${human.hasToothpick ? 'Да' : 'Нет'}"></dd>
+            </div>
+            <div>
+                <dt>Автомобиль</dt>
+                <dd th:text="${human.car != null ? human.car.name : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Создан</dt>
+                <dd th:text="${#temporals.format(human.creationDate, 'dd.MM.yyyy HH:mm')}"></dd>
+            </div>
+        </dl>
+        <div class="form-actions">
+            <a class="button" th:href="@{|/humans/${human.id}/edit|}">Редактировать</a>
+            <a class="button secondary" th:href="@{/humans}">К списку</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>
