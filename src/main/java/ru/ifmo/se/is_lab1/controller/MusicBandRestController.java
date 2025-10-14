@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ifmo.se.is_lab1.domain.Mood;
 import ru.ifmo.se.is_lab1.dto.AssignCarRequest;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Validated
 @RequestMapping("/api/bands")
 public class MusicBandRestController {
 
@@ -80,6 +84,14 @@ public class MusicBandRestController {
         return musicBandService.sumImpactSpeed();
     }
 
+    @GetMapping("/impact-speed/count")
+    public long countByImpactSpeedLessThan(@RequestParam("threshold")
+                                           @NotNull(message = "Порог обязателен")
+                                           @DecimalMin(value = "0.0", inclusive = false,
+                                                   message = "Порог должен быть положительным") BigDecimal threshold) {
+        return musicBandService.countByImpactSpeedLessThan(threshold);
+    }
+
     @GetMapping("/soundtrack")
     public List<MusicBandDto> findBySoundtrackPrefix(@RequestParam("prefix") String prefix) {
         return musicBandService.findBySoundtrackPrefix(prefix);
@@ -93,5 +105,15 @@ public class MusicBandRestController {
     @PostMapping("/{id}/assign-car")
     public MusicBandDto assignCar(@PathVariable("id") Long id, @Valid @RequestBody AssignCarRequest request) {
         return musicBandService.assignCar(id, request.getCarId());
+    }
+
+    @PostMapping("/mood/gloom")
+    public int updateMoodToGloom() {
+        return musicBandService.updateMoodToGloom();
+    }
+
+    @PostMapping("/cars/assign-default")
+    public int assignDefaultCar() {
+        return musicBandService.assignDefaultCarToHeroesWithoutCar();
     }
 }
