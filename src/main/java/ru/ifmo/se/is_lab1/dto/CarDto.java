@@ -3,17 +3,15 @@ package ru.ifmo.se.is_lab1.dto;
 public class CarDto {
     private Long id;
     private String name;
-    private String model;
-    private String color;
+    private Boolean cool;
 
     public CarDto() {
     }
 
-    public CarDto(Long id, String name, String model, String color) {
+    public CarDto(Long id, String name, Boolean cool) {
         this.id = id;
         this.name = name;
-        this.model = model;
-        this.color = color;
+        this.cool = cool;
     }
 
     public Long getId() {
@@ -32,19 +30,11 @@ public class CarDto {
         this.name = name;
     }
 
-    public String getModel() {
-        return model;
+    public Boolean getCool() {
+        return cool;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
+    public void setCool(Boolean cool) {
+        this.cool = cool;
     }
 }

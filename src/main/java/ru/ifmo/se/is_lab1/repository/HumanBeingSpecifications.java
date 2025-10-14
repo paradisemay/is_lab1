@@ -2,15 +2,15 @@ package ru.ifmo.se.is_lab1.repository;
 
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import ru.ifmo.se.is_lab1.domain.MusicBand;
-import ru.ifmo.se.is_lab1.dto.MusicBandFilter;
+import ru.ifmo.se.is_lab1.model.HumanBeing;
+import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
 
-public final class MusicBandSpecifications {
+public final class HumanBeingSpecifications {
 
-    private MusicBandSpecifications() {
+    private HumanBeingSpecifications() {
     }
 
-    public static Specification<MusicBand> withFilter(MusicBandFilter filter) {
+    public static Specification<HumanBeing> withFilter(HumanBeingFilter filter) {
         return (root, query, builder) -> {
             var predicates = new java.util.ArrayList<Predicate>();
 
@@ -28,7 +28,21 @@ public final class MusicBandSpecifications {
             filter.soundtrackPrefixOptional().ifPresent(prefix ->
                     predicates.add(builder.like(builder.lower(root.get("soundtrackName")), prefix.toLowerCase() + "%")));
 
-            filter.carIdOptional().ifPresent(carId -> predicates.add(builder.equal(root.get("car").get("id"), carId)));
+            filter.carIdOptional().ifPresent(carId ->
+                    predicates.add(builder.equal(root.get("car").get("id"), carId)));
+
+            filter.realHeroOptional().ifPresent(realHero ->
+                    predicates.add(realHero
+                            ? builder.isTrue(root.get("realHero"))
+                            : builder.isFalse(root.get("realHero"))));
+
+            filter.hasToothpickOptional().ifPresent(hasToothpick ->
+                    predicates.add(hasToothpick
+                            ? builder.isTrue(root.get("hasToothpick"))
+                            : builder.isFalse(root.get("hasToothpick"))));
+
+            filter.weaponTypeOptional().ifPresent(weaponType ->
+                    predicates.add(builder.equal(root.get("weaponType"), weaponType)));
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
