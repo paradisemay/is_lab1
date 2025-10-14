@@ -16,7 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -32,7 +32,7 @@ public class HumanBeing {
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "name", nullable = false, length = 255, unique = true)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
     @Valid
@@ -45,27 +45,21 @@ public class HumanBeing {
     @Column(name = "creation_date", nullable = false, updatable = false)
     private Instant creationDate;
 
-    @Column(name = "real_hero", nullable = false)
-    private boolean realHero;
+    @Column(name = "real_hero")
+    private Boolean realHero;
 
-    @NotNull
     @Column(name = "has_toothpick", nullable = false)
-    private Boolean hasToothpick;
+    private boolean hasToothpick;
 
-    @NotNull
-    @DecimalMin(value = "-1000.0")
+    @Positive
+    @Max(907)
     @Column(name = "impact_speed", nullable = false)
-    private Double impactSpeed;
+    private int impactSpeed;
 
     @NotBlank
     @Size(max = 255)
     @Column(name = "soundtrack_name", nullable = false, length = 255)
     private String soundtrackName;
-
-    @NotNull
-    @Positive
-    @Column(name = "minutes_of_waiting", nullable = false)
-    private Long minutesOfWaiting;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "weapon_type", length = 32)
@@ -84,11 +78,10 @@ public class HumanBeing {
 
     public HumanBeing(String name,
                       Coordinates coordinates,
-                      boolean realHero,
-                      Boolean hasToothpick,
-                      Double impactSpeed,
+                      Boolean realHero,
+                      boolean hasToothpick,
+                      int impactSpeed,
                       String soundtrackName,
-                      Long minutesOfWaiting,
                       WeaponType weaponType,
                       Mood mood,
                       Car car) {
@@ -98,7 +91,6 @@ public class HumanBeing {
         this.hasToothpick = hasToothpick;
         this.impactSpeed = impactSpeed;
         this.soundtrackName = soundtrackName;
-        this.minutesOfWaiting = minutesOfWaiting;
         this.weaponType = weaponType;
         this.mood = mood;
         this.car = car;
@@ -128,27 +120,27 @@ public class HumanBeing {
         return creationDate;
     }
 
-    public boolean isRealHero() {
+    public Boolean getRealHero() {
         return realHero;
     }
 
-    public void setRealHero(boolean realHero) {
+    public void setRealHero(Boolean realHero) {
         this.realHero = realHero;
     }
 
-    public Boolean getHasToothpick() {
+    public boolean getHasToothpick() {
         return hasToothpick;
     }
 
-    public void setHasToothpick(Boolean hasToothpick) {
+    public void setHasToothpick(boolean hasToothpick) {
         this.hasToothpick = hasToothpick;
     }
 
-    public Double getImpactSpeed() {
+    public int getImpactSpeed() {
         return impactSpeed;
     }
 
-    public void setImpactSpeed(Double impactSpeed) {
+    public void setImpactSpeed(int impactSpeed) {
         this.impactSpeed = impactSpeed;
     }
 
@@ -158,14 +150,6 @@ public class HumanBeing {
 
     public void setSoundtrackName(String soundtrackName) {
         this.soundtrackName = soundtrackName;
-    }
-
-    public Long getMinutesOfWaiting() {
-        return minutesOfWaiting;
-    }
-
-    public void setMinutesOfWaiting(Long minutesOfWaiting) {
-        this.minutesOfWaiting = minutesOfWaiting;
     }
 
     public WeaponType getWeaponType() {

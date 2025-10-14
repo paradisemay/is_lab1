@@ -19,17 +19,16 @@ public class Coordinates {
 
     @NotNull
     @Column(name = "x", nullable = false)
-    private Double x;
+    private Integer x;
 
-    @NotNull
     @PositiveOrZero
     @Column(name = "y", nullable = false)
-    private Double y;
+    private float y;
 
     protected Coordinates() {
     }
 
-    public Coordinates(Double x, Double y) {
+    public Coordinates(Integer x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -38,19 +37,19 @@ public class Coordinates {
         return id;
     }
 
-    public Double getX() {
+    public Integer getX() {
         return x;
     }
 
-    public void setX(Double x) {
+    public void setX(Integer x) {
         this.x = x;
     }
 
-    public Double getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(Double y) {
+    public void setY(float y) {
         this.y = y;
     }
 }

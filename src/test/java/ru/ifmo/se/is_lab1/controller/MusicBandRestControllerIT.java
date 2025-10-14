@@ -44,9 +44,9 @@ class MusicBandRestControllerIT {
 
     @Test
     void countByImpactSpeedLessThanReturnsExpectedValue() throws Exception {
-        createBand("Alpha", new BigDecimal("10"), Mood.CALM, null);
-        createBand("Beta", new BigDecimal("30"), Mood.SAD, null);
-        createBand("Gamma", new BigDecimal("120"), Mood.ANGRY, null);
+        createBand("Alpha", new BigDecimal("10"), Mood.SADNESS, null);
+        createBand("Beta", new BigDecimal("30"), Mood.LONGING, null);
+        createBand("Gamma", new BigDecimal("120"), Mood.GLOOM, null);
 
         mockMvc.perform(get("/api/bands/impact-speed/count").param("threshold", "50"))
                 .andExpect(status().isOk())
@@ -62,9 +62,9 @@ class MusicBandRestControllerIT {
 
     @Test
     void updateMoodToGloomChangesAllEntities() throws Exception {
-        createBand("Joy", new BigDecimal("15"), Mood.HAPPY, null);
-        createBand("Calm", new BigDecimal("25"), Mood.CALM, null);
-        createBand("Rage", new BigDecimal("35"), Mood.ANGRY, null);
+        createBand("Joy", new BigDecimal("15"), Mood.SADNESS, null);
+        createBand("Calm", new BigDecimal("25"), Mood.LONGING, null);
+        createBand("Rage", new BigDecimal("35"), Mood.SADNESS, null);
 
         mockMvc.perform(post("/api/bands/mood/gloom"))
                 .andExpect(status().isOk())
@@ -84,9 +84,9 @@ class MusicBandRestControllerIT {
         existingCar.setColor("Синий");
         Car persistedExistingCar = carRepository.save(existingCar);
 
-        createBand("WithCar", new BigDecimal("60"), Mood.CALM, persistedExistingCar);
-        createBand("WithoutOne", new BigDecimal("40"), Mood.SAD, null);
-        createBand("WithoutTwo", new BigDecimal("80"), Mood.ANGRY, null);
+        createBand("WithCar", new BigDecimal("60"), Mood.SADNESS, persistedExistingCar);
+        createBand("WithoutOne", new BigDecimal("40"), Mood.LONGING, null);
+        createBand("WithoutTwo", new BigDecimal("80"), Mood.GLOOM, null);
 
         mockMvc.perform(post("/api/bands/cars/assign-default"))
                 .andExpect(status().isOk())

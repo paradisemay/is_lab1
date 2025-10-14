@@ -37,7 +37,7 @@ class MusicBandServiceTest {
         form.setName("Aurora");
         form.setImpactSpeed(new BigDecimal("12.50"));
         form.setSoundtrackName("Northern Lights");
-        form.setMood(Mood.CALM);
+        form.setMood(Mood.SADNESS);
         form.setCarId(car.getId());
 
         MusicBandDto created = musicBandService.create(form);
@@ -54,14 +54,14 @@ class MusicBandServiceTest {
         first.setName("Thunder");
         first.setImpactSpeed(new BigDecimal("9.00"));
         first.setSoundtrackName("Storm Rising");
-        first.setMood(Mood.ANGRY);
+        first.setMood(Mood.GLOOM);
         musicBandService.create(first);
 
         MusicBandFormDto second = new MusicBandFormDto();
         second.setName("Sunny");
         second.setImpactSpeed(new BigDecimal("5.00"));
         second.setSoundtrackName("Sunrise Melody");
-        second.setMood(Mood.SAD);
+        second.setMood(Mood.LONGING);
         musicBandService.create(second);
 
         MusicBandFilter filter = new MusicBandFilter();
@@ -72,11 +72,11 @@ class MusicBandServiceTest {
         assertThat(filtered).hasSize(1);
         assertThat(filtered.getFirst().getName()).isEqualTo("Sunny");
 
-        int updated = musicBandService.bulkUpdateMood(Mood.ANGRY, Mood.HAPPY);
+        int updated = musicBandService.bulkUpdateMood(Mood.GLOOM, Mood.LONGING);
         assertThat(updated).isEqualTo(1);
 
         List<MusicBandDto> byPrefix = musicBandService.findBySoundtrackPrefix("Sto");
         assertThat(byPrefix).hasSize(1);
-        assertThat(byPrefix.getFirst().getMood()).isEqualTo(Mood.HAPPY);
+        assertThat(byPrefix.getFirst().getMood()).isEqualTo(Mood.LONGING);
     }
 }
