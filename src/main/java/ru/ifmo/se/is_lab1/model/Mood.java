@@ -4,6 +4,6 @@ public enum Mood {
     SORROW,
     GLOOM,
     APATHY,
-    RAGE,
-    FRENZY
+    CALM,
+    RAGE
 }
