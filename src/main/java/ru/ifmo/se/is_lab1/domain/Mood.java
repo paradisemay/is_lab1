@@ -5,5 +5,6 @@ public enum Mood {
     HAPPY,
     SAD,
     ANGRY,
-    FRENZIED
+    FRENZIED,
+    GLOOM
 }

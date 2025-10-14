@@ -1,5 +1,7 @@
 package ru.ifmo.se.is_lab1.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,6 +26,17 @@ public class RestExceptionHandler {
         Map<String, String> errors = ex.getBindingResult().getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -> a));
+        return ResponseEntity.badRequest().body(Map.of(
+                "message", "Ошибка валидации",
+                "errors", errors
+        ));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> errors = ex.getConstraintViolations().stream()
+                .collect(Collectors.toMap(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage,
+                        (a, b) -> a));
         return ResponseEntity.badRequest().body(Map.of(
                 "message", "Ошибка валидации",
                 "errors", errors

@@ -1,8 +1,10 @@
 package ru.ifmo.se.is_lab1.websocket;
 
+import jakarta.validation.Valid;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import ru.ifmo.se.is_lab1.dto.ImpactSpeedCountRequest;
 import ru.ifmo.se.is_lab1.dto.MusicBandSummary;
 import ru.ifmo.se.is_lab1.service.MusicBandService;
 
@@ -19,5 +21,23 @@ public class MusicBandWebSocketController {
     @SendTo("/topic/bands-summary")
     public MusicBandSummary summary() {
         return new MusicBandSummary(musicBandService.findAll().size(), musicBandService.sumImpactSpeed());
+    }
+
+    @MessageMapping("/bands/impact-speed/count")
+    @SendTo("/topic/bands-impact-count")
+    public long countByImpactSpeed(@Valid ImpactSpeedCountRequest request) {
+        return musicBandService.countByImpactSpeedLessThan(request.getThreshold());
+    }
+
+    @MessageMapping("/bands/mood/gloom")
+    @SendTo("/topic/bands-mood-gloom")
+    public int makeEveryoneGloomy() {
+        return musicBandService.updateMoodToGloom();
+    }
+
+    @MessageMapping("/bands/cars/assign-default")
+    @SendTo("/topic/bands-default-car")
+    public int assignDefaultCar() {
+        return musicBandService.assignDefaultCarToHeroesWithoutCar();
     }
 }
