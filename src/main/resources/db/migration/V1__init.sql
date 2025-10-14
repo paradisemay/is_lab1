@@ -33,7 +33,7 @@ CREATE TABLE human_being (
     id                 BIGSERIAL PRIMARY KEY,
     name               TEXT             NOT NULL,
     coordinates_id     BIGINT           NOT NULL REFERENCES coordinates (id) ON DELETE RESTRICT,
-    creation_date      TIMESTAMPTZ      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    creation_date      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     real_hero          BOOLEAN          NOT NULL,
     has_toothpick      BOOLEAN          NOT NULL,
     impact_speed       DOUBLE PRECISION NOT NULL,

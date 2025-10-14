@@ -10,8 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "cars")
+@Entity(name = "legacy_car")
+@Table(name = "car")
 public class Car {
 
     @Id
@@ -20,11 +20,11 @@ public class Car {
 
     @NotBlank
     @Size(max = 120)
-    @Column(name = "car_name", nullable = false, unique = true, length = 120)
+    @Column(name = "name", nullable = false, unique = true, length = 120)
     private String name;
 
     @NotNull
-    @Column(name = "car_cool", nullable = false)
+    @Column(name = "cool", nullable = false)
     private Boolean cool;
 
     protected Car() {

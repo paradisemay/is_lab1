@@ -5,7 +5,6 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,7 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
@@ -24,7 +23,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "human_beings")
+@Table(name = "human_being")
 public class HumanBeing {
 
     @Id
@@ -33,12 +32,13 @@ public class HumanBeing {
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "human_name", nullable = false, length = 255, unique = true)
+    @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;
 
-    @Embedded
     @Valid
     @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "coordinates_id", nullable = false)
     private Coordinates coordinates;
 
     @CreationTimestamp
@@ -65,20 +65,18 @@ public class HumanBeing {
     @NotNull
     @Positive
     @Column(name = "minutes_of_waiting", nullable = false)
-    private Integer minutesOfWaiting;
+    private Long minutesOfWaiting;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "weapon_type", nullable = false, length = 32)
+    @Column(name = "weapon_type", length = 32)
     private WeaponType weaponType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mood", length = 32)
     private Mood mood;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "car_id", nullable = false, unique = true)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_id")
     private Car car;
 
     protected HumanBeing() {
@@ -90,7 +88,7 @@ public class HumanBeing {
                       Boolean hasToothpick,
                       Double impactSpeed,
                       String soundtrackName,
-                      Integer minutesOfWaiting,
+                      Long minutesOfWaiting,
                       WeaponType weaponType,
                       Mood mood,
                       Car car) {
@@ -162,11 +160,11 @@ public class HumanBeing {
         this.soundtrackName = soundtrackName;
     }
 
-    public Integer getMinutesOfWaiting() {
+    public Long getMinutesOfWaiting() {
         return minutesOfWaiting;
     }
 
-    public void setMinutesOfWaiting(Integer minutesOfWaiting) {
+    public void setMinutesOfWaiting(Long minutesOfWaiting) {
         this.minutesOfWaiting = minutesOfWaiting;
     }
 
