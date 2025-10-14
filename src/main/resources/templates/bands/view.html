@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru" th:replace="fragments/layout :: layout(~{::section})">
+<head>
+    <title>Просмотр группы</title>
+</head>
+<body>
+<section>
+    <div class="detail-card">
+        <h2 th:text="${band.name}">Группа</h2>
+        <dl>
+            <div>
+                <dt>ID</dt>
+                <dd th:text="${band.id}"></dd>
+            </div>
+            <div>
+                <dt>Скорость воздействия</dt>
+                <dd th:text="${band.impactSpeed}"></dd>
+            </div>
+            <div>
+                <dt>Саундтрек</dt>
+                <dd th:text="${band.soundtrackName}"></dd>
+            </div>
+            <div>
+                <dt>Настроение</dt>
+                <dd th:text="${band.mood}"></dd>
+            </div>
+            <div>
+                <dt>Автомобиль</dt>
+                <dd th:text="${band.car != null ? band.car.name : '—'}"></dd>
+            </div>
+            <div>
+                <dt>Создана</dt>
+                <dd th:text="${#temporals.format(band.creationDate, 'dd.MM.yyyy HH:mm')}"></dd>
+            </div>
+        </dl>
+        <div class="form-actions">
+            <a class="button" th:href="@{|/bands/${band.id}/edit|}">Редактировать</a>
+            <a class="button secondary" th:href="@{/bands}">К списку</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

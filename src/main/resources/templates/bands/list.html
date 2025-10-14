@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru" th:replace="fragments/layout :: layout(~{::section})">
+<head>
+    <title>Музыкальные группы</title>
+</head>
+<body>
+<section>
+    <div class="alerts">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    </div>
+    <div class="summary">
+        <span>Всего групп: <strong id="band-count" th:text="${bands.totalElements}"></strong></span>
+        <span>Суммарная скорость: <strong id="impact-sum" th:text="${sumImpactSpeed}"></strong></span>
+    </div>
+    <form class="filter-form" method="get">
+        <div class="form-grid">
+            <label>Название
+                <input type="text" name="name" th:value="${filter.name}">
+            </label>
+            <label>Минимальная скорость
+                <input type="number" step="0.01" name="minImpactSpeed" th:value="${filter.minImpactSpeed}">
+            </label>
+            <label>Максимальная скорость
+                <input type="number" step="0.01" name="maxImpactSpeed" th:value="${filter.maxImpactSpeed}">
+            </label>
+            <label>Префикс саундтрека
+                <input type="text" name="soundtrackPrefix" th:value="${filter.soundtrackPrefix}">
+            </label>
+            <label>Настроение
+                <select name="mood">
+                    <option value="">—</option>
+                    <option th:each="m : ${moods}"
+                            th:value="${m}"
+                            th:selected="${filter.mood} == ${m}"
+                            th:text="${m}"></option>
+                </select>
+            </label>
+            <label>Автомобиль
+                <select name="carId">
+                    <option value="">—</option>
+                    <option th:each="car : ${cars}"
+                            th:value="${car.id}"
+                            th:selected="${filter.carId} == ${car.id}"
+                            th:text="${car.name}"></option>
+                </select>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit">Применить</button>
+            <a class="button secondary" th:href="@{/bands}">Сбросить</a>
+        </div>
+    </form>
+    <table class="data-table" id="bands-table" data-total-pages="" th:attr="data-total-pages=${bands.totalPages}">
+        <thead>
+        <tr>
+            <th><a th:href="@{|/bands?page=${page}&size=${size}&sort=id&direction=${direction}|}">ID</a></th>
+            <th><a th:href="@{|/bands?page=${page}&size=${size}&sort=name&direction=${direction}|}">Название</a></th>
+            <th>Скорость</th>
+            <th>Саундтрек</th>
+            <th>Настроение</th>
+            <th>Автомобиль</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="band : ${bands.content}">
+            <td th:text="${band.id}"></td>
+            <td th:text="${band.name}"></td>
+            <td th:text="${band.impactSpeed}"></td>
+            <td th:text="${band.soundtrackName}"></td>
+            <td th:text="${band.mood}"></td>
+            <td th:text="${band.car != null ? band.car.name : '—'}"></td>
+            <td>
+                <a th:href="@{|/bands/${band.id}|}">Просмотр</a>
+                <a th:href="@{|/bands/${band.id}/edit|}">Изменить</a>
+            </td>
+        </tr>
+        <tr th:if="${bands.content.isEmpty()}">
+            <td colspan="7" class="empty">Нет данных</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination" th:attr="data-page=${page},data-size=${size}">
+        <button type="button" class="page-btn" data-direction="prev" th:disabled="${bands.first}">Назад</button>
+        <span>Страница <strong th:text="${bands.number + 1}"></strong> из <strong th:text="${bands.totalPages == 0 ? 1 : bands.totalPages}"></strong></span>
+        <button type="button" class="page-btn" data-direction="next" th:disabled="${bands.last}">Вперёд</button>
+    </div>
+</section>
+</body>
+</html>
