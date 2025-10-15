@@ -63,7 +63,7 @@ public class HumanBeingViewController {
     }
 
     @GetMapping
-    public String list(@RequestParam(name = "page") Optional<Integer> page,
+    public ModelAndView list(@RequestParam(name = "page") Optional<Integer> page,
                        @RequestParam(name = "size") Optional<Integer> size,
                        @RequestParam(name = "sort") Optional<String> sort,
                        @RequestParam(name = "direction") Optional<String> direction,
