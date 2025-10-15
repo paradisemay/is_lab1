@@ -2,7 +2,7 @@ package ru.ifmo.se.is_lab1.repository;
 
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import ru.ifmo.se.is_lab1.model.HumanBeing;
+import ru.ifmo.se.is_lab1.domain.HumanBeing;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
 
 public final class HumanBeingSpecifications {

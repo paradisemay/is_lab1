@@ -1,4 +1,4 @@
-package ru.ifmo.se.is_lab1.model;
+package ru.ifmo.se.is_lab1.domain;
 
 import java.time.Instant;
 
@@ -21,6 +21,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import ru.ifmo.se.is_lab1.model.Mood;
+import ru.ifmo.se.is_lab1.model.WeaponType;
 
 @Entity
 @Table(name = "human_being")

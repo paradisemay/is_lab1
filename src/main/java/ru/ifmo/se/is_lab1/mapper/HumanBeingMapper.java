@@ -3,9 +3,9 @@ package ru.ifmo.se.is_lab1.mapper;
 import org.springframework.stereotype.Component;
 
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
-import ru.ifmo.se.is_lab1.model.Car;
-import ru.ifmo.se.is_lab1.model.Coordinates;
-import ru.ifmo.se.is_lab1.model.HumanBeing;
+import ru.ifmo.se.is_lab1.domain.Car;
+import ru.ifmo.se.is_lab1.domain.Coordinates;
+import ru.ifmo.se.is_lab1.domain.HumanBeing;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
 
 @Component

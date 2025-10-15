@@ -1,4 +1,4 @@
-package ru.ifmo.se.is_lab1.model;
+package ru.ifmo.se.is_lab1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Entity(name = "legacy_coordinates")
+@Entity
 @Table(name = "coordinates")
 public class Coordinates {
 
