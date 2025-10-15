@@ -304,6 +304,7 @@ public class HumanBeingViewController {
         adder.accept("moods", Arrays.asList(Mood.values()));
         adder.accept("weaponTypes", Arrays.asList(WeaponType.values()));
         adder.accept("cars", carService.findAll());
+    }
     
     private void populateReferenceData(ModelAndView modelAndView) {
         modelAndView.addObject("moods", Arrays.asList(Mood.values()));
