@@ -3,6 +3,7 @@ package ru.ifmo.se.is_lab1.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import jakarta.validation.Valid;
 
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -60,19 +63,20 @@ public class HumanBeingViewController {
     }
 
     @GetMapping
-    public ModelAndView list(@RequestParam(name = "page") Optional<Integer> page,
-                             @RequestParam(name = "size") Optional<Integer> size,
-                             @RequestParam(name = "sort") Optional<String> sort,
-                             @RequestParam(name = "direction") Optional<String> direction,
-                             @RequestParam(name = "name") Optional<String> name,
-                             @RequestParam(name = "mood") Optional<Mood> mood,
-                             @RequestParam(name = "weaponType") Optional<WeaponType> weaponType,
-                             @RequestParam(name = "minImpactSpeed") Optional<Integer> minImpactSpeed,
-                             @RequestParam(name = "maxImpactSpeed") Optional<Integer> maxImpactSpeed,
-                             @RequestParam(name = "soundtrackPrefix") Optional<String> soundtrackPrefix,
-                             @RequestParam(name = "carId") Optional<Long> carId,
-                             @RequestParam(name = "realHero") Optional<Boolean> realHero,
-                             @RequestParam(name = "hasToothpick") Optional<Boolean> hasToothpick) {
+    public String list(@RequestParam(name = "page") Optional<Integer> page,
+                       @RequestParam(name = "size") Optional<Integer> size,
+                       @RequestParam(name = "sort") Optional<String> sort,
+                       @RequestParam(name = "direction") Optional<String> direction,
+                       @RequestParam(name = "name") Optional<String> name,
+                       @RequestParam(name = "mood") Optional<Mood> mood,
+                       @RequestParam(name = "weaponType") Optional<WeaponType> weaponType,
+                       @RequestParam(name = "minImpactSpeed") Optional<Integer> minImpactSpeed,
+                       @RequestParam(name = "maxImpactSpeed") Optional<Integer> maxImpactSpeed,
+                       @RequestParam(name = "soundtrackPrefix") Optional<String> soundtrackPrefix,
+                       @RequestParam(name = "carId") Optional<Long> carId,
+                       @RequestParam(name = "realHero") Optional<Boolean> realHero,
+                       @RequestParam(name = "hasToothpick") Optional<Boolean> hasToothpick,
+                       Model model) {
         int pageNumber = page.orElse(0);
         int pageSize = size.orElse(10);
         Sort sortOrder = sort.map(property -> Sort.by(direction.map(Sort.Direction::fromString).orElse(Sort.Direction.ASC), property))
@@ -125,7 +129,7 @@ public class HumanBeingViewController {
             mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
         }
         mav.addObject("human", form);
-        populateReferenceData(mav);
+        populateReferenceData(mav.getModelMap());
         return mav;
     }
 
@@ -137,7 +141,7 @@ public class HumanBeingViewController {
             ModelAndView mav = new ModelAndView("humans/create");
             mav.addObject("human", form);
             mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
-            populateReferenceData(mav);
+            populateReferenceData(mav.getModelMap());
             return mav;
         }
         HumanBeingDto dto = humanBeingService.create(form);
@@ -180,7 +184,7 @@ public class HumanBeingViewController {
         }
         mav.addObject("human", form);
         mav.addObject("humanId", id);
-        populateReferenceData(mav);
+        populateReferenceData(mav.getModelMap());
         return mav;
     }
 
@@ -194,7 +198,7 @@ public class HumanBeingViewController {
             mav.addObject("human", form);
             mav.addObject("humanId", id);
             mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
-            populateReferenceData(mav);
+            populateReferenceData(mav.getModelMap());
             return mav;
         }
         humanBeingService.update(id, form);
@@ -288,8 +292,16 @@ public class HumanBeingViewController {
     }
 
     private void populateReferenceData(Model model) {
-        model.addAttribute("moods", Arrays.asList(Mood.values()));
-        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
-        model.addAttribute("cars", carService.findAll());
+        populateReferenceData(model::addAttribute);
+    }
+
+    private void populateReferenceData(ModelMap model) {
+        populateReferenceData(model::addAttribute);
+    }
+
+    private void populateReferenceData(BiConsumer<String, Object> adder) {
+        adder.accept("moods", Arrays.asList(Mood.values()));
+        adder.accept("weaponTypes", Arrays.asList(WeaponType.values()));
+        adder.accept("cars", carService.findAll());
     }
 }
