@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
 import ru.ifmo.se.is_lab1.dto.MoodChangeRequest;
-import ru.ifmo.se.is_lab1.model.Car;
-import ru.ifmo.se.is_lab1.model.Coordinates;
-import ru.ifmo.se.is_lab1.model.HumanBeing;
+import ru.ifmo.se.is_lab1.domain.Car;
+import ru.ifmo.se.is_lab1.domain.Coordinates;
+import ru.ifmo.se.is_lab1.domain.HumanBeing;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.repository.CarRepository;
