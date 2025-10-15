@@ -1,4 +1,4 @@
-package ru.ifmo.se.is_lab1.model;
+package ru.ifmo.se.is_lab1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Entity(name = "legacy_car")
+@Entity
 @Table(name = "car")
 public class Car {
 

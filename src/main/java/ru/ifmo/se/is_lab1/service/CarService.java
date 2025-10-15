@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ifmo.se.is_lab1.dto.CarDto;
 import ru.ifmo.se.is_lab1.mapper.CarMapper;
 import ru.ifmo.se.is_lab1.repository.CarRepository;
-import ru.ifmo.se.is_lab1.model.Car;
+import ru.ifmo.se.is_lab1.domain.Car;
 
 import java.util.List;
 import java.util.stream.Collectors;

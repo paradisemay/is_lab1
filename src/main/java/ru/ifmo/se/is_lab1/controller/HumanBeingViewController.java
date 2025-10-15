@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
@@ -41,20 +41,19 @@ public class HumanBeingViewController {
     }
 
     @GetMapping
-    public String list(@RequestParam(name = "page") Optional<Integer> page,
-                       @RequestParam(name = "size") Optional<Integer> size,
-                       @RequestParam(name = "sort") Optional<String> sort,
-                       @RequestParam(name = "direction") Optional<String> direction,
-                       @RequestParam(name = "name") Optional<String> name,
-                       @RequestParam(name = "mood") Optional<Mood> mood,
-                       @RequestParam(name = "weaponType") Optional<WeaponType> weaponType,
-                       @RequestParam(name = "minImpactSpeed") Optional<Integer> minImpactSpeed,
-                       @RequestParam(name = "maxImpactSpeed") Optional<Integer> maxImpactSpeed,
-                       @RequestParam(name = "soundtrackPrefix") Optional<String> soundtrackPrefix,
-                       @RequestParam(name = "carId") Optional<Long> carId,
-                       @RequestParam(name = "realHero") Optional<Boolean> realHero,
-                       @RequestParam(name = "hasToothpick") Optional<Boolean> hasToothpick,
-                       Model model) {
+    public ModelAndView list(@RequestParam(name = "page") Optional<Integer> page,
+                             @RequestParam(name = "size") Optional<Integer> size,
+                             @RequestParam(name = "sort") Optional<String> sort,
+                             @RequestParam(name = "direction") Optional<String> direction,
+                             @RequestParam(name = "name") Optional<String> name,
+                             @RequestParam(name = "mood") Optional<Mood> mood,
+                             @RequestParam(name = "weaponType") Optional<WeaponType> weaponType,
+                             @RequestParam(name = "minImpactSpeed") Optional<Integer> minImpactSpeed,
+                             @RequestParam(name = "maxImpactSpeed") Optional<Integer> maxImpactSpeed,
+                             @RequestParam(name = "soundtrackPrefix") Optional<String> soundtrackPrefix,
+                             @RequestParam(name = "carId") Optional<Long> carId,
+                             @RequestParam(name = "realHero") Optional<Boolean> realHero,
+                             @RequestParam(name = "hasToothpick") Optional<Boolean> hasToothpick) {
         int pageNumber = page.orElse(0);
         int pageSize = size.orElse(10);
         Sort sortOrder = sort.map(property -> Sort.by(direction.map(Sort.Direction::fromString).orElse(Sort.Direction.ASC), property))
@@ -74,56 +73,65 @@ public class HumanBeingViewController {
 
         Page<HumanBeingDto> pageResult = humanBeingService.findAll(filter, pageable);
 
-        model.addAttribute("humans", pageResult);
-        model.addAttribute("moods", Arrays.asList(Mood.values()));
-        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
-        model.addAttribute("cars", carService.findAll());
-        model.addAttribute("sumImpactSpeed", humanBeingService.sumImpactSpeed());
-        model.addAttribute("filter", filter);
-        model.addAttribute("page", pageNumber);
-        model.addAttribute("size", pageSize);
-        model.addAttribute("sort", sort.orElse("id"));
-        model.addAttribute("direction", direction.orElse("ASC"));
-        return "humans/list";
+        ModelAndView mav = new ModelAndView("humans/list");
+        mav.addObject("humans", pageResult);
+        mav.addObject("moods", Arrays.asList(Mood.values()));
+        mav.addObject("weaponTypes", Arrays.asList(WeaponType.values()));
+        mav.addObject("cars", carService.findAll());
+        mav.addObject("sumImpactSpeed", humanBeingService.sumImpactSpeed());
+        mav.addObject("filter", filter);
+        mav.addObject("page", pageNumber);
+        mav.addObject("size", pageSize);
+        mav.addObject("sort", sort.orElse("id"));
+        mav.addObject("direction", direction.orElse("ASC"));
+        return mav;
     }
 
     @GetMapping("/create")
-    public String createForm(Model model) {
-        if (!model.containsAttribute("human")) {
-            HumanBeingFormDto form = new HumanBeingFormDto();
+    public ModelAndView createForm(@ModelAttribute("human") HumanBeingFormDto form,
+                                   BindingResult bindingResult) {
+        if (form.getHasToothpick() == null) {
             form.setHasToothpick(Boolean.FALSE);
-            model.addAttribute("human", form);
         }
-        populateReferenceData(model);
-        return "humans/create";
+        ModelAndView mav = new ModelAndView("humans/create");
+        if (bindingResult.hasErrors()) {
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+        }
+        mav.addObject("human", form);
+        populateReferenceData(mav);
+        return mav;
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("human") HumanBeingFormDto form,
-                         BindingResult bindingResult,
-                         RedirectAttributes redirectAttributes) {
+    public ModelAndView create(@Valid @ModelAttribute("human") HumanBeingFormDto form,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.human", bindingResult);
-            redirectAttributes.addFlashAttribute("human", form);
-            return "redirect:/humans/create";
+            ModelAndView mav = new ModelAndView("humans/create");
+            mav.addObject("human", form);
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+            populateReferenceData(mav);
+            return mav;
         }
         HumanBeingDto dto = humanBeingService.create(form);
         redirectAttributes.addFlashAttribute("success", "Человек создан");
-        return "redirect:/humans/" + dto.getId();
+        return new ModelAndView("redirect:/humans/" + dto.getId());
     }
 
     @GetMapping("/{id}")
-    public String view(@PathVariable("id") Long id, Model model) {
+    public ModelAndView view(@PathVariable("id") Long id) {
         HumanBeingDto dto = humanBeingService.findById(id);
-        model.addAttribute("human", dto);
-        return "humans/view";
+        ModelAndView mav = new ModelAndView("humans/view");
+        mav.addObject("human", dto);
+        return mav;
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable("id") Long id, Model model) {
-        if (!model.containsAttribute("human")) {
+    public ModelAndView editForm(@PathVariable("id") Long id,
+                                 @ModelAttribute("human") HumanBeingFormDto form,
+                                 BindingResult bindingResult) {
+        if (!bindingResult.hasErrors() && form.getName() == null) {
             HumanBeingDto dto = humanBeingService.findById(id);
-            HumanBeingFormDto form = new HumanBeingFormDto();
             form.setName(dto.getName());
             if (dto.getCoordinates() != null) {
                 form.setCoordinatesX(dto.getCoordinates().getX());
@@ -138,38 +146,45 @@ public class HumanBeingViewController {
             if (dto.getCar() != null) {
                 form.setCarId(dto.getCar().getId());
             }
-            model.addAttribute("human", form);
         }
-        populateReferenceData(model);
-        model.addAttribute("humanId", id);
-        return "humans/edit";
+        ModelAndView mav = new ModelAndView("humans/edit");
+        if (bindingResult.hasErrors()) {
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+        }
+        mav.addObject("human", form);
+        mav.addObject("humanId", id);
+        populateReferenceData(mav);
+        return mav;
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable("id") Long id,
-                         @Valid @ModelAttribute("human") HumanBeingFormDto form,
-                         BindingResult bindingResult,
-                         RedirectAttributes redirectAttributes) {
+    public ModelAndView update(@PathVariable("id") Long id,
+                               @Valid @ModelAttribute("human") HumanBeingFormDto form,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.human", bindingResult);
-            redirectAttributes.addFlashAttribute("human", form);
-            return "redirect:/humans/" + id + "/edit";
+            ModelAndView mav = new ModelAndView("humans/edit");
+            mav.addObject("human", form);
+            mav.addObject("humanId", id);
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+            populateReferenceData(mav);
+            return mav;
         }
         humanBeingService.update(id, form);
         redirectAttributes.addFlashAttribute("success", "Изменения сохранены");
-        return "redirect:/humans/" + id;
+        return new ModelAndView("redirect:/humans/" + id);
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+    public ModelAndView delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         humanBeingService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Человек удалён");
-        return "redirect:/humans";
+        return new ModelAndView("redirect:/humans");
     }
 
-    private void populateReferenceData(Model model) {
-        model.addAttribute("moods", Arrays.asList(Mood.values()));
-        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
-        model.addAttribute("cars", carService.findAll());
+    private void populateReferenceData(ModelAndView mav) {
+        mav.addObject("moods", Arrays.asList(Mood.values()));
+        mav.addObject("weaponTypes", Arrays.asList(WeaponType.values()));
+        mav.addObject("cars", carService.findAll());
     }
 }

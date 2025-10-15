@@ -1,7 +1,7 @@
 package ru.ifmo.se.is_lab1.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.ifmo.se.is_lab1.model.Car;
+import ru.ifmo.se.is_lab1.domain.Car;
 import ru.ifmo.se.is_lab1.dto.CarDto;
 
 @Component
