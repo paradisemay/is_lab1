@@ -1,6 +1,7 @@
 package ru.ifmo.se.is_lab1.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
@@ -23,6 +24,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
+import ru.ifmo.se.is_lab1.dto.ImpactSpeedCountRequest;
+import ru.ifmo.se.is_lab1.dto.MoodChangeRequest;
+import ru.ifmo.se.is_lab1.dto.SoundtrackSearchRequest;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.service.CarService;
@@ -38,6 +42,21 @@ public class HumanBeingViewController {
     public HumanBeingViewController(HumanBeingService humanBeingService, CarService carService) {
         this.humanBeingService = humanBeingService;
         this.carService = carService;
+    }
+
+    @ModelAttribute("moodChangeRequest")
+    public MoodChangeRequest moodChangeRequest() {
+        return new MoodChangeRequest();
+    }
+
+    @ModelAttribute("impactSpeedRequest")
+    public ImpactSpeedCountRequest impactSpeedRequest() {
+        return new ImpactSpeedCountRequest();
+    }
+
+    @ModelAttribute("soundtrackSearchRequest")
+    public SoundtrackSearchRequest soundtrackSearchRequest() {
+        return new SoundtrackSearchRequest();
     }
 
     @GetMapping
@@ -73,18 +92,26 @@ public class HumanBeingViewController {
 
         Page<HumanBeingDto> pageResult = humanBeingService.findAll(filter, pageable);
 
-        ModelAndView mav = new ModelAndView("humans/list");
-        mav.addObject("humans", pageResult);
-        mav.addObject("moods", Arrays.asList(Mood.values()));
-        mav.addObject("weaponTypes", Arrays.asList(WeaponType.values()));
-        mav.addObject("cars", carService.findAll());
-        mav.addObject("sumImpactSpeed", humanBeingService.sumImpactSpeed());
-        mav.addObject("filter", filter);
-        mav.addObject("page", pageNumber);
-        mav.addObject("size", pageSize);
-        mav.addObject("sort", sort.orElse("id"));
-        mav.addObject("direction", direction.orElse("ASC"));
-        return mav;
+        model.addAttribute("humans", pageResult);
+        model.addAttribute("moods", Arrays.asList(Mood.values()));
+        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
+        model.addAttribute("cars", carService.findAll());
+        model.addAttribute("sumImpactSpeed", humanBeingService.sumImpactSpeed());
+        model.addAttribute("filter", filter);
+        model.addAttribute("page", pageNumber);
+        model.addAttribute("size", pageSize);
+        model.addAttribute("sort", sort.orElse("id"));
+        model.addAttribute("direction", direction.orElse("ASC"));
+        if (!model.containsAttribute("moodChangeRequest")) {
+            model.addAttribute("moodChangeRequest", new MoodChangeRequest());
+        }
+        if (!model.containsAttribute("impactSpeedRequest")) {
+            model.addAttribute("impactSpeedRequest", new ImpactSpeedCountRequest());
+        }
+        if (!model.containsAttribute("soundtrackSearchRequest")) {
+            model.addAttribute("soundtrackSearchRequest", new SoundtrackSearchRequest());
+        }
+        return "humans/list";
     }
 
     @GetMapping("/create")
@@ -182,9 +209,87 @@ public class HumanBeingViewController {
         return new ModelAndView("redirect:/humans");
     }
 
-    private void populateReferenceData(ModelAndView mav) {
-        mav.addObject("moods", Arrays.asList(Mood.values()));
-        mav.addObject("weaponTypes", Arrays.asList(WeaponType.values()));
-        mav.addObject("cars", carService.findAll());
+    @PostMapping("/actions/change-mood")
+    public String changeMood(@Valid @ModelAttribute("moodChangeRequest") MoodChangeRequest request,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.moodChangeRequest", bindingResult);
+            redirectAttributes.addFlashAttribute("moodChangeRequest", request);
+            redirectAttributes.addFlashAttribute("actionError", "Укажите исходное и новое настроение");
+            return "redirect:/humans";
+        }
+        int updated = humanBeingService.bulkUpdateMood(request.getSourceMood(), request.getTargetMood());
+        if (updated > 0) {
+            redirectAttributes.addFlashAttribute("success", String.format("Изменено настроение у %d человек", updated));
+        } else {
+            redirectAttributes.addFlashAttribute("actionError", "Подходящих людей не найдено");
+        }
+        return "redirect:/humans";
+    }
+
+    @PostMapping("/actions/make-gloom")
+    public String makeEveryoneGloomy(RedirectAttributes redirectAttributes) {
+        int updated = humanBeingService.updateMoodToGloom();
+        if (updated > 0) {
+            redirectAttributes.addFlashAttribute("success", String.format("Настроение %d человек установлено в GLOOM", updated));
+        } else {
+            redirectAttributes.addFlashAttribute("actionError", "Настроения уже установлены в GLOOM");
+        }
+        return "redirect:/humans";
+    }
+
+    @PostMapping("/actions/assign-default-car")
+    public String assignDefaultCar(RedirectAttributes redirectAttributes) {
+        int updated = humanBeingService.assignDefaultCarToHeroesWithoutCar();
+        if (updated > 0) {
+            redirectAttributes.addFlashAttribute("success", String.format("Автомобиль назначен %d героям", updated));
+        } else {
+            redirectAttributes.addFlashAttribute("actionError", "Все герои уже с автомобилями");
+        }
+        return "redirect:/humans";
+    }
+
+    @PostMapping("/actions/count-impact")
+    public String countByImpactSpeed(@Valid @ModelAttribute("impactSpeedRequest") ImpactSpeedCountRequest request,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.impactSpeedRequest", bindingResult);
+            redirectAttributes.addFlashAttribute("impactSpeedRequest", request);
+            redirectAttributes.addFlashAttribute("actionError", "Исправьте ошибки в пороге скорости");
+            return "redirect:/humans";
+        }
+        long count = humanBeingService.countByImpactSpeedLessThan(request.getThreshold());
+        redirectAttributes.addFlashAttribute("impactSpeedCount", count);
+        redirectAttributes.addFlashAttribute("impactSpeedRequest", request);
+        return "redirect:/humans";
+    }
+
+    @PostMapping("/actions/search-soundtrack")
+    public String searchBySoundtrack(@Valid @ModelAttribute("soundtrackSearchRequest") SoundtrackSearchRequest request,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.soundtrackSearchRequest", bindingResult);
+            redirectAttributes.addFlashAttribute("soundtrackSearchRequest", request);
+            redirectAttributes.addFlashAttribute("actionError", "Префикс саундтрека обязателен");
+            return "redirect:/humans";
+        }
+        List<HumanBeingDto> matches = humanBeingService.findBySoundtrackPrefix(request.getPrefix());
+        redirectAttributes.addFlashAttribute("soundtrackMatches", matches);
+        redirectAttributes.addFlashAttribute("soundtrackSearchRequest", request);
+        if (matches.isEmpty()) {
+            redirectAttributes.addFlashAttribute("actionError", "Совпадения по саундтреку не найдены");
+        } else {
+            redirectAttributes.addFlashAttribute("success", String.format("Найдено %d совпадений по саундтрекам", matches.size()));
+        }
+        return "redirect:/humans";
+    }
+
+    private void populateReferenceData(Model model) {
+        model.addAttribute("moods", Arrays.asList(Mood.values()));
+        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
+        model.addAttribute("cars", carService.findAll());
     }
 }

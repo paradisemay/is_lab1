@@ -13,6 +13,7 @@ import org.springframework.util.Assert;
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
+import ru.ifmo.se.is_lab1.dto.HumanBeingSummary;
 import ru.ifmo.se.is_lab1.mapper.HumanBeingMapper;
 import ru.ifmo.se.is_lab1.domain.Car;
 import ru.ifmo.se.is_lab1.domain.Coordinates;
@@ -87,7 +88,7 @@ public class HumanBeingService {
         );
         HumanBeing saved = humanBeingRepository.save(humanBeing);
         HumanBeingDto dto = humanBeingMapper.toDto(saved);
-        eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.CREATED, dto));
+        publishChange(new HumanBeingEvent(HumanBeingEventType.CREATED, dto));
         return dto;
     }
 
@@ -104,7 +105,7 @@ public class HumanBeingService {
         Car car = resolveCar(form.getCarId());
         humanBeingMapper.updateEntity(humanBeing, form, coordinates, car);
         HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
-        eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.UPDATED, dto));
+        publishChange(new HumanBeingEvent(HumanBeingEventType.UPDATED, dto));
         return dto;
     }
 
@@ -113,12 +114,18 @@ public class HumanBeingService {
         HumanBeing humanBeing = getEntity(id);
         HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
         humanBeingRepository.delete(humanBeing);
-        eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.DELETED, dto));
+        publishChange(new HumanBeingEvent(HumanBeingEventType.DELETED, dto));
     }
 
     public long sumImpactSpeed() {
         Long result = humanBeingRepository.sumImpactSpeed();
         return result != null ? result : 0L;
+    }
+
+    public HumanBeingSummary getSummary() {
+        long totalCount = humanBeingRepository.count();
+        long totalImpactSpeed = sumImpactSpeed();
+        return new HumanBeingSummary(totalCount, totalImpactSpeed);
     }
 
     public long countByImpactSpeedLessThan(int threshold) {
@@ -136,7 +143,7 @@ public class HumanBeingService {
     public int bulkUpdateMood(Mood source, Mood target) {
         int updated = humanBeingRepository.bulkUpdateMood(source, target);
         if (updated > 0) {
-            eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.MOOD_UPDATED, null));
+            publishChange(new HumanBeingEvent(HumanBeingEventType.MOOD_UPDATED, null));
         }
         return updated;
     }
@@ -145,7 +152,7 @@ public class HumanBeingService {
     public int updateMoodToGloom() {
         int updated = humanBeingRepository.updateMoodForAll(Mood.GLOOM);
         if (updated > 0) {
-            eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.MOOD_UPDATED, null));
+            publishChange(new HumanBeingEvent(HumanBeingEventType.MOOD_UPDATED, null));
         }
         return updated;
     }
@@ -159,7 +166,7 @@ public class HumanBeingService {
         Car savedCar = carRepository.save(defaultCar);
         int updated = humanBeingRepository.assignCarToAllWithoutCar(savedCar);
         if (updated > 0) {
-            eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.CAR_ASSIGNED, null));
+            publishChange(new HumanBeingEvent(HumanBeingEventType.CAR_ASSIGNED, null));
         }
         return updated;
     }
@@ -170,7 +177,7 @@ public class HumanBeingService {
         Car car = carService.getEntity(carId);
         humanBeing.setCar(car);
         HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
-        eventPublisher.publish(new HumanBeingEvent(HumanBeingEventType.CAR_ASSIGNED, dto));
+        publishChange(new HumanBeingEvent(HumanBeingEventType.CAR_ASSIGNED, dto));
         return dto;
     }
 
@@ -184,5 +191,10 @@ public class HumanBeingService {
             return null;
         }
         return carService.getEntity(carId);
+    }
+
+    private void publishChange(HumanBeingEvent event) {
+        eventPublisher.publish(event);
+        eventPublisher.publishSummary(getSummary());
     }
 }

@@ -133,6 +133,82 @@ button.button.danger {
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
+.alert-error {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.action-card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-card h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.action-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.action-buttons form {
+    margin: 0;
+}
+
+.action-buttons form button {
+    width: 100%;
+}
+
+.action-results {
+    font-size: 14px;
+    color: #334155;
+}
+
+.action-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.action-list li {
+    background: #f8fafc;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.action-list li span {
+    font-weight: 600;
+}
+
+.action-list li small {
+    color: #64748b;
+}
+
 .filter-form .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

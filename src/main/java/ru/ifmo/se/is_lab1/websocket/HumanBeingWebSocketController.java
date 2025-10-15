@@ -22,7 +22,7 @@ public class HumanBeingWebSocketController {
     @MessageMapping("/humans/summary")
     @SendTo("/topic/humans-summary")
     public HumanBeingSummary summary() {
-        return new HumanBeingSummary(humanBeingService.findAll().size(), humanBeingService.sumImpactSpeed());
+        return humanBeingService.getSummary();
     }
 
     @MessageMapping("/humans/impact-speed/count")
