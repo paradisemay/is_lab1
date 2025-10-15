@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
@@ -194,7 +196,20 @@ public class HumanBeingService {
     }
 
     private void publishChange(HumanBeingEvent event) {
-        eventPublisher.publish(event);
-        eventPublisher.publishSummary(getSummary());
+        Runnable publisher = () -> {
+            eventPublisher.publish(event);
+            eventPublisher.publishSummary(getSummary());
+        };
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publisher.run();
+                }
+            });
+        } else {
+            publisher.run();
+        }
     }
 }
