@@ -7,10 +7,86 @@
 <section>
     <div class="alerts">
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${actionError}" class="alert alert-error" th:text="${actionError}"></div>
     </div>
     <div class="summary">
         <span>Всего людей: <strong id="human-count" th:text="${humans.totalElements}"></strong></span>
         <span>Суммарная скорость: <strong id="impact-sum" th:text="${sumImpactSpeed}"></strong></span>
+    </div>
+    <div class="actions-grid">
+        <div class="action-card">
+            <h3>Массовая смена настроения</h3>
+            <form th:action="@{/humans/actions/change-mood}" th:object="${moodChangeRequest}" method="post">
+                <div class="form-field" th:classappend="${#fields.hasErrors('sourceMood')} ? ' has-error'">
+                    <label for="sourceMood">Текущее настроение</label>
+                    <select id="sourceMood" th:field="*{sourceMood}">
+                        <option value="">—</option>
+                        <option th:each="m : ${moods}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('sourceMood')}" th:errors="*{sourceMood}"></div>
+                </div>
+                <div class="form-field" th:classappend="${#fields.hasErrors('targetMood')} ? ' has-error'">
+                    <label for="targetMood">Новое настроение</label>
+                    <select id="targetMood" th:field="*{targetMood}">
+                        <option value="">—</option>
+                        <option th:each="m : ${moods}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('targetMood')}" th:errors="*{targetMood}"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Изменить</button>
+                </div>
+            </form>
+        </div>
+        <div class="action-card">
+            <h3>Быстрые операции</h3>
+            <div class="action-buttons">
+                <form th:action="@{/humans/actions/make-gloom}" method="post">
+                    <button type="submit" class="button secondary">Сделать всех gloomy</button>
+                </form>
+                <form th:action="@{/humans/actions/assign-default-car}" method="post">
+                    <button type="submit">Назначить автомобиль</button>
+                </form>
+            </div>
+        </div>
+        <div class="action-card">
+            <h3>Счётчик по скорости</h3>
+            <form th:action="@{/humans/actions/count-impact}" th:object="${impactSpeedRequest}" method="post">
+                <div class="form-field" th:classappend="${#fields.hasErrors('threshold')} ? ' has-error'">
+                    <label for="threshold">Порог скорости</label>
+                    <input id="threshold" type="number" min="1" max="907" th:field="*{threshold}">
+                    <div class="error" th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Рассчитать</button>
+                </div>
+            </form>
+            <div class="action-results" th:if="${impactSpeedCount != null}">
+                <span>Людей со скоростью ниже порога: <strong th:text="${impactSpeedCount}"></strong></span>
+            </div>
+        </div>
+        <div class="action-card">
+            <h3>Поиск саундтреков</h3>
+            <form th:action="@{/humans/actions/search-soundtrack}" th:object="${soundtrackSearchRequest}" method="post">
+                <div class="form-field" th:classappend="${#fields.hasErrors('prefix')} ? ' has-error'">
+                    <label for="soundtrackPrefixInput">Префикс</label>
+                    <input id="soundtrackPrefixInput" type="text" th:field="*{prefix}">
+                    <div class="error" th:if="${#fields.hasErrors('prefix')}" th:errors="*{prefix}"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Найти</button>
+                </div>
+            </form>
+            <div class="action-results" th:if="${soundtrackMatches != null}">
+                <ul class="action-list" th:if="${!#lists.isEmpty(soundtrackMatches)}">
+                    <li th:each="human : ${soundtrackMatches}">
+                        <span th:text="${human.name}"></span>
+                        <small th:text="${human.soundtrackName}"></small>
+                    </li>
+                </ul>
+                <div th:if="${#lists.isEmpty(soundtrackMatches)}">Нет совпадений</div>
+            </div>
+        </div>
     </div>
     <form class="filter-form" method="get">
         <div class="form-grid">
