@@ -17,6 +17,8 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>, J
     @Query("select coalesce(sum(h.impactSpeed), 0) from HumanBeing h")
     Long sumImpactSpeed();
 
+    boolean existsByName(String name);
+
     long countByImpactSpeedLessThan(int threshold);
 
     List<HumanBeing> findBySoundtrackNameStartingWithIgnoreCase(String prefix);
