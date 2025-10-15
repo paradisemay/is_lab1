@@ -96,26 +96,27 @@ public class HumanBeingViewController {
 
         Page<HumanBeingDto> pageResult = humanBeingService.findAll(filter, pageable);
 
-        model.addAttribute("humans", pageResult);
-        model.addAttribute("moods", Arrays.asList(Mood.values()));
-        model.addAttribute("weaponTypes", Arrays.asList(WeaponType.values()));
-        model.addAttribute("cars", carService.findAll());
-        model.addAttribute("sumImpactSpeed", humanBeingService.sumImpactSpeed());
-        model.addAttribute("filter", filter);
-        model.addAttribute("page", pageNumber);
-        model.addAttribute("size", pageSize);
-        model.addAttribute("sort", sort.orElse("id"));
-        model.addAttribute("direction", direction.orElse("ASC"));
-        if (!model.containsAttribute("moodChangeRequest")) {
-            model.addAttribute("moodChangeRequest", new MoodChangeRequest());
+        ModelAndView mav = new ModelAndView("humans/list");
+        mav.addObject("humans", pageResult);
+        mav.addObject("sumImpactSpeed", humanBeingService.sumImpactSpeed());
+        mav.addObject("filter", filter);
+        mav.addObject("page", pageNumber);
+        mav.addObject("size", pageSize);
+        mav.addObject("sort", sort.orElse("id"));
+        mav.addObject("direction", direction.orElse("ASC"));
+
+        if (!mav.getModel().containsKey("moodChangeRequest")) {
+            mav.addObject("moodChangeRequest", new MoodChangeRequest());
         }
-        if (!model.containsAttribute("impactSpeedRequest")) {
-            model.addAttribute("impactSpeedRequest", new ImpactSpeedCountRequest());
+        if (!mav.getModel().containsKey("impactSpeedRequest")) {
+            mav.addObject("impactSpeedRequest", new ImpactSpeedCountRequest());
         }
-        if (!model.containsAttribute("soundtrackSearchRequest")) {
-            model.addAttribute("soundtrackSearchRequest", new SoundtrackSearchRequest());
+        if (!mav.getModel().containsKey("soundtrackSearchRequest")) {
+            mav.addObject("soundtrackSearchRequest", new SoundtrackSearchRequest());
         }
-        return "humans/list";
+
+        populateReferenceData(mav);
+        return mav;
     }
 
     @GetMapping("/create")
@@ -303,5 +304,10 @@ public class HumanBeingViewController {
         adder.accept("moods", Arrays.asList(Mood.values()));
         adder.accept("weaponTypes", Arrays.asList(WeaponType.values()));
         adder.accept("cars", carService.findAll());
+    
+    private void populateReferenceData(ModelAndView modelAndView) {
+        modelAndView.addObject("moods", Arrays.asList(Mood.values()));
+        modelAndView.addObject("weaponTypes", Arrays.asList(WeaponType.values()));
+        modelAndView.addObject("cars", carService.findAll());
     }
 }
