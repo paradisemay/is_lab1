@@ -1,7 +1,8 @@
 package ru.ifmo.se.is_lab1.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.ifmo.se.is_lab1.model.Car;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import ru.ifmo.se.is_lab1.domain.Car;
 
-public interface CarRepository extends JpaRepository<Car, Long> {
+public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificationExecutor<Car> {
 }

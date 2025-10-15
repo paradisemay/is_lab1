@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import ru.ifmo.se.is_lab1.model.Car;
-import ru.ifmo.se.is_lab1.model.HumanBeing;
+import ru.ifmo.se.is_lab1.domain.Car;
+import ru.ifmo.se.is_lab1.domain.HumanBeing;
 import ru.ifmo.se.is_lab1.model.Mood;
 
 public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>, JpaSpecificationExecutor<HumanBeing> {
