@@ -34,6 +34,7 @@ import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.service.CarService;
 import ru.ifmo.se.is_lab1.service.HumanBeingService;
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
 
 @Controller
 @RequestMapping("/humans")
@@ -209,9 +210,14 @@ public class HumanBeingViewController {
 
     @PostMapping("/{id}/delete")
     public ModelAndView delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        humanBeingService.delete(id);
-        redirectAttributes.addFlashAttribute("success", "Человек удалён");
-        return new ModelAndView("redirect:/humans");
+        try {
+            humanBeingService.delete(id);
+            redirectAttributes.addFlashAttribute("success", "Человек удалён");
+            return new ModelAndView("redirect:/humans");
+        } catch (HumanBeingDeletionException ex) {
+            redirectAttributes.addFlashAttribute("deleteError", ex.getMessage());
+            return new ModelAndView("redirect:/humans/" + id + "/edit");
+        }
     }
 
     @PostMapping("/actions/change-mood")
