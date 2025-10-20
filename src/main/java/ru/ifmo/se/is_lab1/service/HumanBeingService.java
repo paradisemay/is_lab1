@@ -28,6 +28,7 @@ import ru.ifmo.se.is_lab1.repository.HumanBeingSpecifications;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEvent;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventType;
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
 
 @Service
 @Transactional(readOnly = true)
@@ -114,6 +115,9 @@ public class HumanBeingService {
     @Transactional
     public void delete(Long id) {
         HumanBeing humanBeing = getEntity(id);
+        if (humanBeing.getCar() != null) {
+            throw new HumanBeingDeletionException("Невозможно удалить человека: к нему привязан автомобиль");
+        }
         HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
         humanBeingRepository.delete(humanBeing);
         publishChange(new HumanBeingEvent(HumanBeingEventType.DELETED, dto));

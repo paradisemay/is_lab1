@@ -5,6 +5,9 @@
 </head>
 <body>
 <section>
+    <div class="alerts">
+        <div th:if="${deleteError}" class="alert alert-error" th:text="${deleteError}"></div>
+    </div>
     <h2>Редактировать человека</h2>
     <form th:action="@{|/humans/${humanId}|}" th:object="${human}" method="post" class="form-card">
         <div class="form-field" th:classappend="${#fields.hasErrors('name')} ? ' has-error'">
