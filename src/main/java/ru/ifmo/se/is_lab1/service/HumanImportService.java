@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,9 +32,11 @@ import ru.ifmo.se.is_lab1.repository.CarRepository;
 import ru.ifmo.se.is_lab1.repository.CoordinatesRepository;
 import ru.ifmo.se.is_lab1.repository.HumanBeingRepository;
 import ru.ifmo.se.is_lab1.service.ImportOperationService;
+import ru.ifmo.se.is_lab1.service.HumanBeingService;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEvent;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventType;
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
 import ru.ifmo.se.is_lab1.service.exception.HumanImportException;
 
 @Service
@@ -46,6 +49,7 @@ public class HumanImportService {
     private final HumanBeingRepository humanBeingRepository;
     private final HumanBeingEventPublisher eventPublisher;
     private final ImportOperationService importOperationService;
+    private final HumanBeingService humanBeingService;
 
     public HumanImportService(ObjectMapper objectMapper,
                               Validator validator,
@@ -53,7 +57,8 @@ public class HumanImportService {
                               CarRepository carRepository,
                               HumanBeingRepository humanBeingRepository,
                               HumanBeingEventPublisher eventPublisher,
-                              ImportOperationService importOperationService) {
+                              ImportOperationService importOperationService,
+                              HumanBeingService humanBeingService) {
         this.objectMapper = objectMapper;
         this.validator = validator;
         this.coordinatesRepository = coordinatesRepository;
@@ -61,6 +66,7 @@ public class HumanImportService {
         this.humanBeingRepository = humanBeingRepository;
         this.eventPublisher = eventPublisher;
         this.importOperationService = importOperationService;
+        this.humanBeingService = humanBeingService;
     }
 
     @Transactional
@@ -75,7 +81,42 @@ public class HumanImportService {
 
             Map<String, Car> carCache = new HashMap<>();
             List<HumanBeing> humansToSave = new ArrayList<>();
-            for (HumanImportRecordDto record : records) {
+            Set<String> nameSoundtrackInBatch = new HashSet<>();
+            Set<Integer> realHeroImpactInBatch = new HashSet<>();
+            for (int i = 0; i < records.size(); i++) {
+                HumanImportRecordDto record = records.get(i);
+                String trimmedName = record.getName() != null ? record.getName().trim() : null;
+                String trimmedSoundtrack = record.getSoundtrackName() != null ? record.getSoundtrackName().trim() : null;
+                if (trimmedName != null && trimmedSoundtrack != null) {
+                    String key = trimmedName + "|" + trimmedSoundtrack;
+                    if (!nameSoundtrackInBatch.add(key)) {
+                        throw new HumanImportException(String.format(
+                                "Запись #%d: комбинация имени '%s' и саундтрека '%s' повторяется в импортируемом файле",
+                                i + 1,
+                                trimmedName,
+                                trimmedSoundtrack));
+                    }
+                }
+                boolean isRealHero = Boolean.TRUE.equals(record.getRealHero());
+                Integer impactSpeed = record.getImpactSpeed();
+                if (isRealHero && impactSpeed != null) {
+                    if (!realHeroImpactInBatch.add(impactSpeed)) {
+                        throw new HumanImportException(String.format(
+                                "Запись #%d: скорость удара настоящего героя %d повторяется в импортируемом файле",
+                                i + 1,
+                                impactSpeed));
+                    }
+                }
+                try {
+                    humanBeingService.ensureUniqueConstraints(null,
+                            trimmedName,
+                            trimmedSoundtrack,
+                            record.getRealHero(),
+                            impactSpeed);
+                } catch (HumanBeingUniquenessException ex) {
+                    throw new HumanImportException(String.format("Запись #%d: %s", i + 1, ex.getMessage()), ex);
+                }
+
                 Coordinates coordinates = coordinatesRepository.save(new Coordinates(
                         record.getCoordinates().getX(),
                         record.getCoordinates().getY()
@@ -85,12 +126,12 @@ public class HumanImportService {
                     throw new HumanImportException("Не удалось восстановить информацию об автомобиле");
                 }
                 HumanBeing humanBeing = new HumanBeing(
-                        record.getName().trim(),
+                        trimmedName,
                         coordinates,
                         record.getRealHero(),
                         Boolean.TRUE.equals(record.getHasToothpick()),
-                        record.getImpactSpeed(),
-                        record.getSoundtrackName().trim(),
+                        impactSpeed,
+                        trimmedSoundtrack,
                         record.getWeaponType(),
                         record.getMood(),
                         car

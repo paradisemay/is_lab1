@@ -212,14 +212,25 @@ public class HumanBeingService {
     }
 
     private void ensureUniqueConstraints(Long currentId, HumanBeingFormDto form) {
-        String name = form.getName() != null ? form.getName().trim() : null;
-        String soundtrack = form.getSoundtrackName() != null ? form.getSoundtrackName().trim() : null;
-        if (name != null && soundtrack != null
-                && humanBeingRepository.hasNameAndSoundtrackConflict(name, soundtrack, currentId)) {
+        ensureUniqueConstraints(currentId,
+                form.getName(),
+                form.getSoundtrackName(),
+                form.getRealHero(),
+                form.getImpactSpeed());
+    }
+
+    public void ensureUniqueConstraints(Long currentId,
+                                        String name,
+                                        String soundtrack,
+                                        Boolean realHero,
+                                        Integer impactSpeed) {
+        String trimmedName = name != null ? name.trim() : null;
+        String trimmedSoundtrack = soundtrack != null ? soundtrack.trim() : null;
+        if (trimmedName != null && trimmedSoundtrack != null
+                && humanBeingRepository.hasNameAndSoundtrackConflict(trimmedName, trimmedSoundtrack, currentId)) {
             throw new HumanBeingUniquenessException("Комбинация имени и саундтрека уже используется другим человеком");
         }
-        boolean isRealHero = Boolean.TRUE.equals(form.getRealHero());
-        Integer impactSpeed = form.getImpactSpeed();
+        boolean isRealHero = Boolean.TRUE.equals(realHero);
         if (isRealHero && impactSpeed != null
                 && humanBeingRepository.hasRealHeroImpactSpeedConflict(impactSpeed, currentId)) {
             throw new HumanBeingUniquenessException("Скорость удара настоящего героя должна быть уникальной");
