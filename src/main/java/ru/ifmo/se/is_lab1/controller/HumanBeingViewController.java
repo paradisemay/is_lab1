@@ -117,6 +117,7 @@ public class HumanBeingViewController {
         }
 
         populateReferenceData(mav);
+        mav.addObject("importEndpoint", "/api/humans/import");
         return mav;
     }
 

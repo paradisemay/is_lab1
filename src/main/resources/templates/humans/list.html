@@ -15,6 +15,22 @@
     </div>
     <div class="actions-grid">
         <div class="action-card">
+            <h3>Импорт из JSON</h3>
+            <form id="import-form" th:attr="data-endpoint=${importEndpoint}" enctype="multipart/form-data">
+                <div class="form-field">
+                    <label for="importFile">Файл</label>
+                    <input id="importFile" type="file" name="file" accept="application/json">
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Загрузить</button>
+                </div>
+            </form>
+            <div class="action-results">
+                <div id="import-success" class="alert alert-success" hidden></div>
+                <div id="import-error" class="alert alert-error" hidden></div>
+            </div>
+        </div>
+        <div class="action-card">
             <h3>Массовая смена настроения</h3>
             <form th:action="@{/humans/actions/change-mood}" th:object="${moodChangeRequest}" method="post">
                 <div class="form-field" th:classappend="${#fields.hasErrors('sourceMood')} ? ' has-error'">
