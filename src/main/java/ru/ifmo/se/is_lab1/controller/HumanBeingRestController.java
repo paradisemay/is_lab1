@@ -30,11 +30,13 @@ import ru.ifmo.se.is_lab1.dto.AssignCarRequest;
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
+import ru.ifmo.se.is_lab1.dto.ImportOperationDto;
 import ru.ifmo.se.is_lab1.dto.MoodChangeRequest;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.service.HumanBeingService;
 import ru.ifmo.se.is_lab1.service.HumanImportService;
+import ru.ifmo.se.is_lab1.service.ImportOperationService;
 
 @RestController
 @Validated
@@ -43,11 +45,14 @@ public class HumanBeingRestController {
 
     private final HumanBeingService humanBeingService;
     private final HumanImportService humanImportService;
+    private final ImportOperationService importOperationService;
 
     public HumanBeingRestController(HumanBeingService humanBeingService,
-                                    HumanImportService humanImportService) {
+                                    HumanImportService humanImportService,
+                                    ImportOperationService importOperationService) {
         this.humanBeingService = humanBeingService;
         this.humanImportService = humanImportService;
+        this.importOperationService = importOperationService;
     }
 
     @GetMapping
@@ -148,5 +153,14 @@ public class HumanBeingRestController {
                 "message", String.format("Импортировано записей: %d", imported),
                 "imported", imported
         );
+    }
+
+    @GetMapping("/import/history")
+    public Page<ImportOperationDto> getImportHistory(@RequestParam(name = "page") Optional<Integer> page,
+                                                     @RequestParam(name = "size") Optional<Integer> size) {
+        int pageNumber = page.orElse(0);
+        int pageSize = size.orElse(10);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return importOperationService.findHistory(pageable);
     }
 }

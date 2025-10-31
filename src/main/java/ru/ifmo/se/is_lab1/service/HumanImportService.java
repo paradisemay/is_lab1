@@ -30,6 +30,7 @@ import ru.ifmo.se.is_lab1.dto.HumanImportRecordDto;
 import ru.ifmo.se.is_lab1.repository.CarRepository;
 import ru.ifmo.se.is_lab1.repository.CoordinatesRepository;
 import ru.ifmo.se.is_lab1.repository.HumanBeingRepository;
+import ru.ifmo.se.is_lab1.service.ImportOperationService;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEvent;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventType;
@@ -44,53 +45,78 @@ public class HumanImportService {
     private final CarRepository carRepository;
     private final HumanBeingRepository humanBeingRepository;
     private final HumanBeingEventPublisher eventPublisher;
+    private final ImportOperationService importOperationService;
 
     public HumanImportService(ObjectMapper objectMapper,
                               Validator validator,
                               CoordinatesRepository coordinatesRepository,
                               CarRepository carRepository,
                               HumanBeingRepository humanBeingRepository,
-                              HumanBeingEventPublisher eventPublisher) {
+                              HumanBeingEventPublisher eventPublisher,
+                              ImportOperationService importOperationService) {
         this.objectMapper = objectMapper;
         this.validator = validator;
         this.coordinatesRepository = coordinatesRepository;
         this.carRepository = carRepository;
         this.humanBeingRepository = humanBeingRepository;
         this.eventPublisher = eventPublisher;
+        this.importOperationService = importOperationService;
     }
 
     @Transactional
     public int importHumans(MultipartFile file) {
-        List<HumanImportRecordDto> records = readRecords(file);
-        if (records.isEmpty()) {
-            throw new HumanImportException("Файл не содержит данных для импорта");
-        }
-        validateRecords(records);
+        var operation = importOperationService.startOperation();
+        try {
+            List<HumanImportRecordDto> records = readRecords(file);
+            if (records.isEmpty()) {
+                throw new HumanImportException("Файл не содержит данных для импорта");
+            }
+            validateRecords(records);
 
-        Map<String, Car> carCache = new HashMap<>();
-        List<HumanBeing> humansToSave = new ArrayList<>();
-        for (HumanImportRecordDto record : records) {
-            Coordinates coordinates = coordinatesRepository.save(new Coordinates(
-                    record.getCoordinates().getX(),
-                    record.getCoordinates().getY()
-            ));
-            Car car = resolveCar(record.getCar(), carCache);
-            HumanBeing humanBeing = new HumanBeing(
-                    record.getName().trim(),
-                    coordinates,
-                    record.getRealHero(),
-                    Boolean.TRUE.equals(record.getHasToothpick()),
-                    record.getImpactSpeed(),
-                    record.getSoundtrackName().trim(),
-                    record.getWeaponType(),
-                    record.getMood(),
-                    car
-            );
-            humansToSave.add(humanBeing);
+            Map<String, Car> carCache = new HashMap<>();
+            List<HumanBeing> humansToSave = new ArrayList<>();
+            for (HumanImportRecordDto record : records) {
+                Coordinates coordinates = coordinatesRepository.save(new Coordinates(
+                        record.getCoordinates().getX(),
+                        record.getCoordinates().getY()
+                ));
+                Car car = resolveCar(record.getCar(), carCache);
+                HumanBeing humanBeing = new HumanBeing(
+                        record.getName().trim(),
+                        coordinates,
+                        record.getRealHero(),
+                        Boolean.TRUE.equals(record.getHasToothpick()),
+                        record.getImpactSpeed(),
+                        record.getSoundtrackName().trim(),
+                        record.getWeaponType(),
+                        record.getMood(),
+                        car
+                );
+                humansToSave.add(humanBeing);
+            }
+            List<HumanBeing> saved = humanBeingRepository.saveAll(humansToSave);
+            int imported = saved.size();
+            importOperationService.markSuccess(operation.getId(), imported);
+            publishAfterCommit();
+            return imported;
+        } catch (RuntimeException e) {
+            importOperationService.markFailure(operation.getId(), resolveErrorMessage(e));
+            throw e;
         }
-        List<HumanBeing> saved = humanBeingRepository.saveAll(humansToSave);
-        publishAfterCommit();
-        return saved.size();
+    }
+
+    private String resolveErrorMessage(RuntimeException exception) {
+        if (exception == null) {
+            return "Неизвестная ошибка";
+        }
+        String message = exception.getMessage();
+        if (message == null || message.isBlank()) {
+            message = exception.getClass().getSimpleName();
+        }
+        if (message.length() > 1000) {
+            return message.substring(0, 1000);
+        }
+        return message;
     }
 
     private List<HumanImportRecordDto> readRecords(MultipartFile file) {
