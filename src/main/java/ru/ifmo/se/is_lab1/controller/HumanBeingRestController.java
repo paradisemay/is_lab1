@@ -1,6 +1,7 @@
 package ru.ifmo.se.is_lab1.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import ru.ifmo.se.is_lab1.dto.AssignCarRequest;
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
@@ -31,6 +34,7 @@ import ru.ifmo.se.is_lab1.dto.MoodChangeRequest;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.service.HumanBeingService;
+import ru.ifmo.se.is_lab1.service.HumanImportService;
 
 @RestController
 @Validated
@@ -38,9 +42,12 @@ import ru.ifmo.se.is_lab1.service.HumanBeingService;
 public class HumanBeingRestController {
 
     private final HumanBeingService humanBeingService;
+    private final HumanImportService humanImportService;
 
-    public HumanBeingRestController(HumanBeingService humanBeingService) {
+    public HumanBeingRestController(HumanBeingService humanBeingService,
+                                    HumanImportService humanImportService) {
         this.humanBeingService = humanBeingService;
+        this.humanImportService = humanImportService;
     }
 
     @GetMapping
@@ -132,5 +139,14 @@ public class HumanBeingRestController {
     @PostMapping("/cars/assign-default")
     public int assignDefaultCar() {
         return humanBeingService.assignDefaultCarToHeroesWithoutCar();
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Map<String, Object> importHumans(@RequestParam("file") MultipartFile file) {
+        int imported = humanImportService.importHumans(file);
+        return Map.of(
+                "message", String.format("Импортировано записей: %d", imported),
+                "imported", imported
+        );
     }
 }

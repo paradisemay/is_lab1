@@ -2,6 +2,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         setupPagination();
         setupWebSocket();
+        setupImport();
     });
 
     function setupPagination() {
@@ -56,5 +57,69 @@
             });
             requestSummary();
         }, error => console.error('WS error', error));
+    }
+
+    function setupImport() {
+        const form = document.getElementById('import-form');
+        if (!form) {
+            return;
+        }
+        const successBox = document.getElementById('import-success');
+        const errorBox = document.getElementById('import-error');
+        const endpoint = form.getAttribute('data-endpoint') || '/api/humans/import';
+
+        const showMessage = (element, message) => {
+            if (!element) {
+                return;
+            }
+            element.textContent = message;
+            element.hidden = false;
+        };
+
+        const hideMessage = element => {
+            if (!element) {
+                return;
+            }
+            element.hidden = true;
+            element.textContent = '';
+        };
+
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            hideMessage(successBox);
+            hideMessage(errorBox);
+            const fileInput = form.querySelector('input[type="file"]');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                showMessage(errorBox, 'Выберите JSON-файл для импорта');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                let payload = {};
+                try {
+                    payload = await response.json();
+                } catch (parseError) {
+                    // ignore parsing error for non-JSON responses
+                }
+                if (!response.ok) {
+                    const message = payload.error || payload.message || 'Не удалось импортировать данные';
+                    showMessage(errorBox, message);
+                    return;
+                }
+                const message = payload.message || 'Импорт успешно завершён';
+                showMessage(successBox, message);
+                fileInput.value = '';
+            } catch (error) {
+                console.error('Ошибка импорта', error);
+                showMessage(errorBox, 'Произошла ошибка при отправке запроса');
+            }
+        });
     }
 })();

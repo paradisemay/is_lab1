@@ -1,7 +1,11 @@
 package ru.ifmo.se.is_lab1.controller;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,8 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import ru.ifmo.se.is_lab1.service.exception.HumanImportException;
 
 @ControllerAdvice(assignableTypes = {HumanBeingRestController.class})
 public class RestExceptionHandler {
@@ -40,6 +43,14 @@ public class RestExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of(
                 "message", "Ошибка валидации",
                 "errors", errors
+        ));
+    }
+
+    @ExceptionHandler(HumanImportException.class)
+    public ResponseEntity<Map<String, Object>> handleImportException(HumanImportException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "message", "Ошибка импорта",
+                "error", ex.getMessage()
         ));
     }
 }
