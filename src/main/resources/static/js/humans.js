@@ -2,7 +2,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         setupPagination();
         setupWebSocket();
-        setupImport();
+        const history = setupImportHistory();
+        setupImport(history);
     });
 
     function setupPagination() {
@@ -59,7 +60,8 @@
         }, error => console.error('WS error', error));
     }
 
-    function setupImport() {
+    function setupImport(historyController) {
+        const history = historyController || { reload: () => {} };
         const form = document.getElementById('import-form');
         if (!form) {
             return;
@@ -116,10 +118,96 @@
                 const message = payload.message || 'Импорт успешно завершён';
                 showMessage(successBox, message);
                 fileInput.value = '';
+                history.reload();
             } catch (error) {
                 console.error('Ошибка импорта', error);
                 showMessage(errorBox, 'Произошла ошибка при отправке запроса');
             }
         });
+    }
+
+    function setupImportHistory() {
+        const historyContainer = document.getElementById('import-history');
+        if (!historyContainer) {
+            return { reload: () => {} };
+        }
+        const endpoint = historyContainer.getAttribute('data-endpoint');
+        const tbody = historyContainer.querySelector('tbody');
+        const reloadButton = historyContainer.querySelector('[data-history-reload]');
+        const isAdmin = historyContainer.getAttribute('data-admin') === 'true';
+
+        const render = (items) => {
+            if (!tbody) {
+                return;
+            }
+            tbody.innerHTML = '';
+            if (!items || items.length === 0) {
+                const emptyRow = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.textContent = 'Операций пока нет';
+                cell.colSpan = isAdmin ? 6 : 5;
+                cell.classList.add('empty');
+                emptyRow.appendChild(cell);
+                tbody.appendChild(emptyRow);
+                return;
+            }
+            items.forEach(item => {
+                const row = document.createElement('tr');
+
+                const idCell = document.createElement('td');
+                idCell.textContent = item.id;
+                row.appendChild(idCell);
+
+                if (isAdmin) {
+                    const initiatorCell = document.createElement('td');
+                    initiatorCell.textContent = item.initiator || '—';
+                    row.appendChild(initiatorCell);
+                }
+
+                const statusCell = document.createElement('td');
+                statusCell.textContent = item.status || '—';
+                row.appendChild(statusCell);
+
+                const addedCell = document.createElement('td');
+                addedCell.textContent = item.addedCount != null ? item.addedCount : '—';
+                row.appendChild(addedCell);
+
+                const errorCell = document.createElement('td');
+                errorCell.textContent = item.errorMessage || '—';
+                row.appendChild(errorCell);
+
+                const updatedCell = document.createElement('td');
+                updatedCell.textContent = item.updatedAt || '—';
+                row.appendChild(updatedCell);
+
+                tbody.appendChild(row);
+            });
+        };
+
+        const load = async () => {
+            if (!endpoint) {
+                return;
+            }
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error('Не удалось получить историю импорта');
+                }
+                const payload = await response.json();
+                render(payload.content || []);
+            } catch (error) {
+                console.error('Не удалось обновить историю импорта', error);
+            }
+        };
+
+        if (reloadButton) {
+            reloadButton.addEventListener('click', () => load());
+        }
+
+        load();
+
+        return {
+            reload: load
+        };
     }
 })();

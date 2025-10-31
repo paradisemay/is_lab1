@@ -32,8 +32,11 @@ import ru.ifmo.se.is_lab1.dto.MoodChangeRequest;
 import ru.ifmo.se.is_lab1.dto.SoundtrackSearchRequest;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
+import ru.ifmo.se.is_lab1.dto.ImportOperationDto;
 import ru.ifmo.se.is_lab1.service.CarService;
 import ru.ifmo.se.is_lab1.service.HumanBeingService;
+import ru.ifmo.se.is_lab1.service.ImportOperationService;
+import ru.ifmo.se.is_lab1.service.security.CurrentUserService;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
 
 @Controller
@@ -42,10 +45,17 @@ public class HumanBeingViewController {
 
     private final HumanBeingService humanBeingService;
     private final CarService carService;
+    private final ImportOperationService importOperationService;
+    private final CurrentUserService currentUserService;
 
-    public HumanBeingViewController(HumanBeingService humanBeingService, CarService carService) {
+    public HumanBeingViewController(HumanBeingService humanBeingService,
+                                    CarService carService,
+                                    ImportOperationService importOperationService,
+                                    CurrentUserService currentUserService) {
         this.humanBeingService = humanBeingService;
         this.carService = carService;
+        this.importOperationService = importOperationService;
+        this.currentUserService = currentUserService;
     }
 
     @ModelAttribute("moodChangeRequest")
@@ -117,7 +127,12 @@ public class HumanBeingViewController {
         }
 
         populateReferenceData(mav);
+        Page<ImportOperationDto> historyPage = importOperationService.findHistory(PageRequest.of(0, 10));
         mav.addObject("importEndpoint", "/api/humans/import");
+        mav.addObject("importHistoryEndpoint", "/api/humans/import/history");
+        mav.addObject("importHistory", historyPage);
+        mav.addObject("historyIsAdmin", currentUserService.isAdmin());
+        mav.addObject("historyUsername", currentUserService.getCurrentUsername());
         return mav;
     }
 

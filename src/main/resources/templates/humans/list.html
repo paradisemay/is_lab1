@@ -104,6 +104,42 @@
             </div>
         </div>
     </div>
+    <div class="history-card" id="import-history"
+         th:attr="data-endpoint=${importHistoryEndpoint},data-admin=${historyIsAdmin}"
+         th:if="${importHistory != null}">
+        <div class="history-header">
+            <h3>История импорта</h3>
+            <div class="history-meta">
+                <span th:if="${!historyIsAdmin}" th:text="${'Пользователь: ' + historyUsername}"></span>
+                <button type="button" class="button secondary" data-history-reload>Обновить</button>
+            </div>
+        </div>
+        <table class="data-table history-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th th:if="${historyIsAdmin}">Инициатор</th>
+                <th>Статус</th>
+                <th>Добавлено</th>
+                <th>Сообщение</th>
+                <th>Обновлено</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="operation : ${importHistory.content}">
+                <td th:text="${operation.id}"></td>
+                <td th:if="${historyIsAdmin}" th:text="${operation.initiator}"></td>
+                <td th:text="${operation.status}"></td>
+                <td th:text="${operation.addedCount != null ? operation.addedCount : '—'}"></td>
+                <td th:text="${operation.errorMessage != null ? operation.errorMessage : '—'}"></td>
+                <td th:text="${operation.updatedAt}"></td>
+            </tr>
+            <tr th:if="${importHistory.content.isEmpty()}" data-history-empty>
+                <td th:attr="colspan=${historyIsAdmin ? 6 : 5}" class="empty">Операций пока нет</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <form class="filter-form" method="get">
         <div class="form-grid">
             <label>Имя
