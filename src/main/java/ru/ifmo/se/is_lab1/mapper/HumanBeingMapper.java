@@ -42,12 +42,14 @@ public class HumanBeingMapper {
                              HumanBeingFormDto form,
                              Coordinates coordinates,
                              Car car) {
-        humanBeing.setName(form.getName());
+        String name = form.getName() != null ? form.getName().trim() : null;
+        String soundtrack = form.getSoundtrackName() != null ? form.getSoundtrackName().trim() : null;
+        humanBeing.setName(name);
         humanBeing.setCoordinates(coordinates);
         humanBeing.setRealHero(form.getRealHero());
         humanBeing.setHasToothpick(Boolean.TRUE.equals(form.getHasToothpick()));
         humanBeing.setImpactSpeed(form.getImpactSpeed());
-        humanBeing.setSoundtrackName(form.getSoundtrackName());
+        humanBeing.setSoundtrackName(soundtrack);
         humanBeing.setWeaponType(form.getWeaponType());
         humanBeing.setMood(form.getMood());
         humanBeing.setCar(car);

@@ -38,6 +38,7 @@ import ru.ifmo.se.is_lab1.service.HumanBeingService;
 import ru.ifmo.se.is_lab1.service.ImportOperationService;
 import ru.ifmo.se.is_lab1.service.security.CurrentUserService;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
 
 @Controller
 @RequestMapping("/humans")
@@ -162,9 +163,18 @@ public class HumanBeingViewController {
             populateReferenceData(mav.getModelMap());
             return mav;
         }
-        HumanBeingDto dto = humanBeingService.create(form);
-        redirectAttributes.addFlashAttribute("success", "Человек создан");
-        return new ModelAndView("redirect:/humans/" + dto.getId());
+        try {
+            HumanBeingDto dto = humanBeingService.create(form);
+            redirectAttributes.addFlashAttribute("success", "Человек создан");
+            return new ModelAndView("redirect:/humans/" + dto.getId());
+        } catch (HumanBeingUniquenessException ex) {
+            bindingResult.reject("human.unique", ex.getMessage());
+            ModelAndView mav = new ModelAndView("humans/create");
+            mav.addObject("human", form);
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+            populateReferenceData(mav.getModelMap());
+            return mav;
+        }
     }
 
     @GetMapping("/{id}")
@@ -219,9 +229,19 @@ public class HumanBeingViewController {
             populateReferenceData(mav.getModelMap());
             return mav;
         }
-        humanBeingService.update(id, form);
-        redirectAttributes.addFlashAttribute("success", "Изменения сохранены");
-        return new ModelAndView("redirect:/humans/" + id);
+        try {
+            humanBeingService.update(id, form);
+            redirectAttributes.addFlashAttribute("success", "Изменения сохранены");
+            return new ModelAndView("redirect:/humans/" + id);
+        } catch (HumanBeingUniquenessException ex) {
+            bindingResult.reject("human.unique", ex.getMessage());
+            ModelAndView mav = new ModelAndView("humans/edit");
+            mav.addObject("human", form);
+            mav.addObject("humanId", id);
+            mav.addObject(BindingResult.MODEL_KEY_PREFIX + "human", bindingResult);
+            populateReferenceData(mav.getModelMap());
+            return mav;
+        }
     }
 
     @PostMapping("/{id}/delete")

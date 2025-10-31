@@ -29,7 +29,15 @@ import ru.ifmo.se.is_lab1.service.event.HumanBeingEvent;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventType;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
 
+/**
+ * Сервис работы с людьми. Дополнительные бизнес-ограничения уникальности:
+ * <ul>
+ *     <li>Комбинация имени и названия саундтрека уникальна (без учёта регистра).</li>
+ *     <li>Для настоящих героев (realHero = true) скорость удара уникальна.</li>
+ * </ul>
+ */
 @Service
 @Transactional(readOnly = true)
 public class HumanBeingService {
@@ -76,15 +84,18 @@ public class HumanBeingService {
 
     @Transactional
     public HumanBeingDto create(HumanBeingFormDto form) {
+        ensureUniqueConstraints(null, form);
         Coordinates coordinates = coordinatesRepository.save(new Coordinates(form.getCoordinatesX(), form.getCoordinatesY()));
         Car car = resolveCar(form.getCarId());
+        String name = form.getName() != null ? form.getName().trim() : null;
+        String soundtrackName = form.getSoundtrackName() != null ? form.getSoundtrackName().trim() : null;
         HumanBeing humanBeing = new HumanBeing(
-                form.getName(),
+                name,
                 coordinates,
                 form.getRealHero(),
                 Boolean.TRUE.equals(form.getHasToothpick()),
                 form.getImpactSpeed(),
-                form.getSoundtrackName(),
+                soundtrackName,
                 form.getWeaponType(),
                 form.getMood(),
                 car
@@ -98,6 +109,7 @@ public class HumanBeingService {
     @Transactional
     public HumanBeingDto update(Long id, HumanBeingFormDto form) {
         HumanBeing humanBeing = getEntity(id);
+        ensureUniqueConstraints(id, form);
         Coordinates coordinates = humanBeing.getCoordinates();
         if (coordinates == null) {
             coordinates = coordinatesRepository.save(new Coordinates(form.getCoordinatesX(), form.getCoordinatesY()));
@@ -197,6 +209,21 @@ public class HumanBeingService {
             return null;
         }
         return carService.getEntity(carId);
+    }
+
+    private void ensureUniqueConstraints(Long currentId, HumanBeingFormDto form) {
+        String name = form.getName() != null ? form.getName().trim() : null;
+        String soundtrack = form.getSoundtrackName() != null ? form.getSoundtrackName().trim() : null;
+        if (name != null && soundtrack != null
+                && humanBeingRepository.hasNameAndSoundtrackConflict(name, soundtrack, currentId)) {
+            throw new HumanBeingUniquenessException("Комбинация имени и саундтрека уже используется другим человеком");
+        }
+        boolean isRealHero = Boolean.TRUE.equals(form.getRealHero());
+        Integer impactSpeed = form.getImpactSpeed();
+        if (isRealHero && impactSpeed != null
+                && humanBeingRepository.hasRealHeroImpactSpeedConflict(impactSpeed, currentId)) {
+            throw new HumanBeingUniquenessException("Скорость удара настоящего героя должна быть уникальной");
+        }
     }
 
     private void publishChange(HumanBeingEvent event) {
