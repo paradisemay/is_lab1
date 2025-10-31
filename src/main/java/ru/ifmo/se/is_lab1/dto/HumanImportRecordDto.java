@@ -24,6 +24,7 @@ public class HumanImportRecordDto {
     @Valid
     private Coordinates coordinates;
 
+    @NotNull
     private Boolean realHero;
 
     @NotNull
@@ -38,10 +39,13 @@ public class HumanImportRecordDto {
     @Size(max = 255)
     private String soundtrackName;
 
+    @NotNull
     private WeaponType weaponType;
 
+    @NotNull
     private Mood mood;
 
+    @NotNull
     @Valid
     private Car car;
 

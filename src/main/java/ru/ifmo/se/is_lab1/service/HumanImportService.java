@@ -81,6 +81,9 @@ public class HumanImportService {
                         record.getCoordinates().getY()
                 ));
                 Car car = resolveCar(record.getCar(), carCache);
+                if (car == null) {
+                    throw new HumanImportException("Не удалось восстановить информацию об автомобиле");
+                }
                 HumanBeing humanBeing = new HumanBeing(
                         record.getName().trim(),
                         coordinates,
