@@ -2,6 +2,7 @@ package ru.ifmo.se.is_lab1.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,4 +37,27 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>, J
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update HumanBeing h set h.car = :car where h.car is null")
     int assignCarToAllWithoutCar(@Param("car") Car car);
+
+    default boolean hasNameAndSoundtrackConflict(String name, String soundtrackName, Long excludeId) {
+        if (name == null || soundtrackName == null) {
+            return false;
+        }
+        String normalizedName = name.trim();
+        String normalizedSoundtrack = soundtrackName.trim();
+        Specification<HumanBeing> specification = Specification
+                .where(HumanBeingSpecifications.hasNameAndSoundtrack(normalizedName, normalizedSoundtrack));
+        if (excludeId != null) {
+            specification = specification.and(HumanBeingSpecifications.excludeId(excludeId));
+        }
+        return count(specification) > 0;
+    }
+
+    default boolean hasRealHeroImpactSpeedConflict(int impactSpeed, Long excludeId) {
+        Specification<HumanBeing> specification = Specification
+                .where(HumanBeingSpecifications.isRealHeroWithImpactSpeed(impactSpeed));
+        if (excludeId != null) {
+            specification = specification.and(HumanBeingSpecifications.excludeId(excludeId));
+        }
+        return count(specification) > 0;
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
 import ru.ifmo.se.is_lab1.service.exception.HumanImportException;
 
 @ControllerAdvice(assignableTypes = {HumanBeingRestController.class})
@@ -50,6 +51,14 @@ public class RestExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleImportException(HumanImportException ex) {
         return ResponseEntity.badRequest().body(Map.of(
                 "message", "Ошибка импорта",
+                "error", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(HumanBeingUniquenessException.class)
+    public ResponseEntity<Map<String, Object>> handleUniqueness(HumanBeingUniquenessException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "message", "Нарушение уникальности",
                 "error", ex.getMessage()
         ));
     }

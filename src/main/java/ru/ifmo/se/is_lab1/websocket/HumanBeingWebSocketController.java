@@ -6,7 +6,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import ru.ifmo.se.is_lab1.dto.HumanBeingSummary;
 import ru.ifmo.se.is_lab1.dto.ImpactSpeedCountRequest;
 import ru.ifmo.se.is_lab1.service.HumanBeingService;
 
@@ -20,9 +19,8 @@ public class HumanBeingWebSocketController {
     }
 
     @MessageMapping("/humans/summary")
-    @SendTo("/topic/humans-summary")
-    public HumanBeingSummary summary() {
-        return humanBeingService.getSummary();
+    public void summary() {
+        // Ответ формируется обработчиком подписки для предотвращения гонок при установке соединения.
     }
 
     @MessageMapping("/humans/impact-speed/count")

@@ -7,15 +7,19 @@
 <section>
     <h2>Создать нового человека</h2>
     <form th:action="@{/humans}" th:object="${human}" method="post" class="form-card">
+        <div class="alerts" th:if="${#fields.hasGlobalErrors()}">
+            <div class="alert alert-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
         <div class="form-field" th:classappend="${#fields.hasErrors('name')} ? ' has-error'">
             <label for="name">Имя</label>
-            <input id="name" type="text" th:field="*{name}">
+            <input id="name" type="text" th:field="*{name}" required>
             <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            <p class="form-hint">Имя в сочетании с саундтреком должно быть уникальным.</p>
         </div>
         <div class="form-row">
             <div class="form-field" th:classappend="${#fields.hasErrors('coordinatesX')} ? ' has-error'">
                 <label for="coordinatesX">Координата X</label>
-                <input id="coordinatesX" type="number" th:field="*{coordinatesX}">
+                <input id="coordinatesX" type="number" th:field="*{coordinatesX}" required>
                 <div class="error" th:if="${#fields.hasErrors('coordinatesX')}" th:errors="*{coordinatesX}"></div>
             </div>
             <div class="form-field" th:classappend="${#fields.hasErrors('coordinatesY')} ? ' has-error'">
@@ -44,12 +48,13 @@
         </div>
         <div class="form-field" th:classappend="${#fields.hasErrors('impactSpeed')} ? ' has-error'">
             <label for="impactSpeed">Скорость удара</label>
-            <input id="impactSpeed" type="number" min="1" max="907" th:field="*{impactSpeed}">
+            <input id="impactSpeed" type="number" min="1" max="907" th:field="*{impactSpeed}" required>
             <div class="error" th:if="${#fields.hasErrors('impactSpeed')}" th:errors="*{impactSpeed}"></div>
+            <p class="form-hint">Для настоящих героев скорость удара должна быть уникальной.</p>
         </div>
         <div class="form-field" th:classappend="${#fields.hasErrors('soundtrackName')} ? ' has-error'">
             <label for="soundtrackName">Саундтрек</label>
-            <input id="soundtrackName" type="text" th:field="*{soundtrackName}">
+            <input id="soundtrackName" type="text" th:field="*{soundtrackName}" required>
             <div class="error" th:if="${#fields.hasErrors('soundtrackName')}" th:errors="*{soundtrackName}"></div>
         </div>
         <div class="form-field">
