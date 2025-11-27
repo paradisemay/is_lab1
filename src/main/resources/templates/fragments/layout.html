@@ -33,6 +33,19 @@
             </button>
             <div class="user-dropdown" data-user-panel hidden>
                 <p class="user-dropdown-title">Профиль</p>
+                <div class="theme-toggle-card">
+                    <div class="theme-toggle-text">
+                        <span class="theme-toggle-title">Тема</span>
+                        <span class="theme-toggle-description">Переключайте светлую и тёмную темы оформления</span>
+                    </div>
+                    <button class="theme-toggle-button" type="button" data-theme-toggle aria-pressed="false">
+                        <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌞</span>
+                        <span class="theme-toggle-label" data-theme-toggle-label>Светлая тема</span>
+                        <span class="theme-toggle-switch" aria-hidden="true">
+                            <span class="theme-toggle-thumb"></span>
+                        </span>
+                    </button>
+                </div>
                 <form class="user-selector" th:action="@{/humans}" method="get">
                     <label>
                         Имя
