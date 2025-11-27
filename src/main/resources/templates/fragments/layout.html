@@ -16,6 +16,20 @@
             <a th:href="@{/humans}">Список</a>
             <a th:href="@{/humans/create}">Создать</a>
         </nav>
+        <form class="user-selector" th:action="@{/humans}" method="get">
+            <label>
+                Имя
+                <input type="text" name="user" th:value="${currentUserName}" placeholder="anonymous">
+            </label>
+            <label>
+                Роль
+                <select name="admin">
+                    <option value="false" th:selected="${!currentUserIsAdmin}">Пользователь</option>
+                    <option value="true" th:selected="${currentUserIsAdmin}">Администратор</option>
+                </select>
+            </label>
+            <button type="submit">Сменить</button>
+        </form>
     </header>
     <main th:replace="${content}"></main>
     <footer class="page-footer">
