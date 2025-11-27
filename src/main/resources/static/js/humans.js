@@ -5,6 +5,7 @@
         const history = setupImportHistory();
         setupImport(history);
         setupImportHelp();
+        setupThemeToggle();
         setupUserMenu();
     });
 
@@ -241,6 +242,63 @@
             if (event.target === modal) {
                 hideModal();
             }
+        });
+    }
+
+    function setupThemeToggle() {
+        const toggle = document.querySelector('[data-theme-toggle]');
+        const label = document.querySelector('[data-theme-toggle-label]');
+        const icon = document.querySelector('[data-theme-toggle-icon]');
+        const storageKey = 'ui-theme-preference';
+        const root = document.documentElement;
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        if (!toggle) {
+            return;
+        }
+
+        const hasStoredPreference = () => {
+            const value = localStorage.getItem(storageKey);
+            return value === 'dark' || value === 'light';
+        };
+
+        const applyTheme = (theme) => {
+            const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+            root.setAttribute('data-theme', normalizedTheme);
+            toggle.classList.toggle('is-dark', normalizedTheme === 'dark');
+            toggle.setAttribute('aria-pressed', normalizedTheme === 'dark' ? 'true' : 'false');
+
+            if (label) {
+                label.textContent = normalizedTheme === 'dark' ? 'Тёмная тема' : 'Светлая тема';
+            }
+
+            if (icon) {
+                icon.textContent = normalizedTheme === 'dark' ? '🌙' : '🌞';
+            }
+        };
+
+        const resolveInitialTheme = () => {
+            const stored = localStorage.getItem(storageKey);
+            if (stored === 'dark' || stored === 'light') {
+                return stored;
+            }
+            return mediaQuery.matches ? 'dark' : 'light';
+        };
+
+        applyTheme(resolveInitialTheme());
+
+        toggle.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem(storageKey, next);
+        });
+
+        mediaQuery.addEventListener('change', (event) => {
+            if (hasStoredPreference()) {
+                return;
+            }
+            applyTheme(event.matches ? 'dark' : 'light');
         });
     }
 
