@@ -187,7 +187,7 @@ class HumanBeingServiceTest {
     void deleteShouldRemoveHumanAndPublishEvent() {
         HumanBeing human = mock(HumanBeing.class);
         HumanBeingDto dto = new HumanBeingDto();
-        when(humanBeingRepository.findById(1L)).thenReturn(Optional.of(human));
+        when(humanBeingRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(human));
         when(humanBeingMapper.toDto(human)).thenReturn(dto);
         when(humanBeingRepository.count()).thenReturn(1L);
         when(humanBeingRepository.sumImpactSpeed()).thenReturn(5L);
@@ -301,7 +301,7 @@ class HumanBeingServiceTest {
 
     @Test
     void assignDefaultCarShouldReturnZeroWhenEveryoneHasCar() {
-        when(humanBeingRepository.findByCarIsNull()).thenReturn(List.of());
+        when(humanBeingRepository.findByCarIsNullForUpdate()).thenReturn(List.of());
 
         int result = humanBeingService.assignDefaultCarToHeroesWithoutCar();
 
@@ -312,7 +312,7 @@ class HumanBeingServiceTest {
     @Test
     void assignDefaultCarShouldSaveCarAndPublishWhenUpdated() {
         HumanBeing hero = mock(HumanBeing.class);
-        when(humanBeingRepository.findByCarIsNull()).thenReturn(List.of(hero));
+        when(humanBeingRepository.findByCarIsNullForUpdate()).thenReturn(List.of(hero));
         Car persisted = new Car("Default", true);
         when(carRepository.save(any(Car.class))).thenReturn(persisted);
         when(humanBeingRepository.assignCarToAllWithoutCar(persisted)).thenReturn(5);
@@ -333,7 +333,7 @@ class HumanBeingServiceTest {
         HumanBeing human = new HumanBeing("Hero", new Coordinates(1, 1f), true, true, 10, "Song", WeaponType.BAT, Mood.SADNESS, null);
         Car car = new Car("Car", true);
         HumanBeingDto dto = new HumanBeingDto();
-        when(humanBeingRepository.findById(1L)).thenReturn(Optional.of(human));
+        when(humanBeingRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(human));
         when(carService.getEntity(2L)).thenReturn(car);
         when(humanBeingMapper.toDto(human)).thenReturn(dto);
         when(humanBeingRepository.count()).thenReturn(1L);

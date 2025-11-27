@@ -137,7 +137,8 @@ public class HumanBeingService {
 
     @Transactional
     public void delete(Long id) {
-        HumanBeing humanBeing = getEntity(id);
+        HumanBeing humanBeing = humanBeingRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new IllegalArgumentException("Человек с указанным идентификатором не найден"));
         if (humanBeing.getCar() != null) {
             throw new HumanBeingDeletionException("Невозможно удалить человека: к нему привязан автомобиль");
         }
@@ -188,7 +189,7 @@ public class HumanBeingService {
 
     @Transactional
     public int assignDefaultCarToHeroesWithoutCar() {
-        if (humanBeingRepository.findByCarIsNull().isEmpty()) {
+        if (humanBeingRepository.findByCarIsNullForUpdate().isEmpty()) {
             return 0;
         }
         Car defaultCar = new Car(DEFAULT_CAR_NAME, DEFAULT_CAR_COOL);
@@ -202,7 +203,8 @@ public class HumanBeingService {
 
     @Transactional
     public HumanBeingDto assignCar(Long humanId, Long carId) {
-        HumanBeing humanBeing = getEntity(humanId);
+        HumanBeing humanBeing = humanBeingRepository.findByIdForUpdate(humanId)
+                .orElseThrow(() -> new IllegalArgumentException("Человек с указанным идентификатором не найден"));
         Car car = carService.getEntity(carId);
         humanBeing.setCar(car);
         HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
