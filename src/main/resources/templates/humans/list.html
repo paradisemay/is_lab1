@@ -4,16 +4,31 @@
     <title>Люди</title>
 </head>
 <body>
-<section>
+<section class="content-shell">
     <div class="alerts">
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${actionError}" class="alert alert-error" th:text="${actionError}"></div>
     </div>
-    <div class="summary">
-        <span>Всего людей: <strong id="human-count" th:text="${humans.totalElements}"></strong></span>
-        <span>Суммарная скорость: <strong id="impact-sum" th:text="${sumImpactSpeed}"></strong></span>
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Люди</p>
+            <h2 class="section-title">Обзор данных</h2>
+            <p class="section-subtitle">Статистика, массовые действия и фильтрация</p>
+        </div>
+        <div class="stat-group">
+            <div class="stat-chip">
+                <span class="stat-label">Всего людей</span>
+                <strong id="human-count" th:text="${humans.totalElements}"></strong>
+            </div>
+            <div class="stat-chip">
+                <span class="stat-label">Суммарная скорость</span>
+                <strong id="impact-sum" th:text="${sumImpactSpeed}"></strong>
+            </div>
+        </div>
     </div>
-    <div class="actions-grid">
+    <div class="section-card">
+        <div class="section-card__title">Операции</div>
+        <div class="actions-grid">
         <div class="action-card">
             <h3>Импорт из JSON</h3>
             <form id="import-form" th:attr="data-endpoint=${importEndpoint}" enctype="multipart/form-data">
@@ -105,11 +120,15 @@
             </div>
         </div>
     </div>
-    <div class="history-card" id="import-history"
+    </div>
+    <div class="history-card section-card" id="import-history"
          th:attr="data-endpoint=${importHistoryEndpoint},data-admin=${historyIsAdmin}"
          th:if="${importHistory != null}">
         <div class="history-header">
-            <h3>История импорта</h3>
+            <div>
+                <p class="eyebrow">Лог действий</p>
+                <h3 class="section-card__title">История импорта</h3>
+            </div>
             <div class="history-meta">
                 <span th:if="${!historyIsAdmin}" th:text="${'Пользователь: ' + historyUsername}"></span>
                 <button type="button" class="button secondary" data-history-reload>Обновить</button>
@@ -176,7 +195,7 @@
             <div class="modal-body"></div>
         </div>
     </div>
-    <form class="filter-form" method="get">
+    <form class="filter-form section-card" method="get">
         <div class="form-grid">
             <label>Имя
                 <input type="text" name="name" th:value="${filter.name}">
@@ -237,48 +256,51 @@
             <a class="button secondary" th:href="@{/humans}">Сбросить</a>
         </div>
     </form>
-    <table class="data-table" id="humans-table" data-total-pages="" th:attr="data-total-pages=${humans.totalPages}">
-        <thead>
-        <tr>
-            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=id&direction=${direction}|}">ID</a></th>
-            <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=name&direction=${direction}|}">Имя</a></th>
-            <th>Координаты</th>
-            <th>Скорость</th>
-            <th>Саундтрек</th>
-            <th>Оружие</th>
-            <th>Настроение</th>
-            <th>Герой</th>
-            <th>Зубочистка</th>
-            <th>Автомобиль</th>
-            <th>Действия</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="human : ${humans.content}">
-            <td th:text="${human.id}"></td>
-            <td th:text="${human.name}"></td>
-            <td th:text="${human.coordinates != null ? '(' + human.coordinates.x + '; ' + human.coordinates.y + ')' : '—'}"></td>
-            <td th:text="${human.impactSpeed}"></td>
-            <td th:text="${human.soundtrackName}"></td>
-            <td th:text="${human.weaponType != null ? human.weaponType : '—'}"></td>
-            <td th:text="${human.mood != null ? human.mood : '—'}"></td>
-            <td th:text="${human.realHero != null ? (human.realHero ? 'Да' : 'Нет') : '—'}"></td>
-            <td th:text="${human.hasToothpick ? 'Да' : 'Нет'}"></td>
-            <td th:text="${human.car != null ? human.car.name : '—'}"></td>
-            <td>
-                <a th:href="@{|/humans/${human.id}|}">Просмотр</a>
-                <a th:href="@{|/humans/${human.id}/edit|}">Изменить</a>
-            </td>
-        </tr>
-        <tr th:if="${humans.content.isEmpty()}">
-            <td colspan="11" class="empty">Нет данных</td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="pagination" th:attr="data-page=${page},data-size=${size}">
-        <button type="button" class="page-btn" data-direction="prev" th:disabled="${humans.first}">Назад</button>
-        <span>Страница <strong th:text="${humans.number + 1}"></strong> из <strong th:text="${humans.totalPages == 0 ? 1 : humans.totalPages}"></strong></span>
-        <button type="button" class="page-btn" data-direction="next" th:disabled="${humans.last}">Вперёд</button>
+    <div class="section-card">
+        <div class="section-card__title">Список</div>
+        <table class="data-table" id="humans-table" data-total-pages="" th:attr="data-total-pages=${humans.totalPages}">
+            <thead>
+            <tr>
+                <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=id&direction=${direction}|}">ID</a></th>
+                <th><a th:href="@{|/humans?page=${page}&size=${size}&sort=name&direction=${direction}|}">Имя</a></th>
+                <th>Координаты</th>
+                <th>Скорость</th>
+                <th>Саундтрек</th>
+                <th>Оружие</th>
+                <th>Настроение</th>
+                <th>Герой</th>
+                <th>Зубочистка</th>
+                <th>Автомобиль</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="human : ${humans.content}">
+                <td th:text="${human.id}"></td>
+                <td th:text="${human.name}"></td>
+                <td th:text="${human.coordinates != null ? '(' + human.coordinates.x + '; ' + human.coordinates.y + ')' : '—'}"></td>
+                <td th:text="${human.impactSpeed}"></td>
+                <td th:text="${human.soundtrackName}"></td>
+                <td th:text="${human.weaponType != null ? human.weaponType : '—'}"></td>
+                <td th:text="${human.mood != null ? human.mood : '—'}"></td>
+                <td th:text="${human.realHero != null ? (human.realHero ? 'Да' : 'Нет') : '—'}"></td>
+                <td th:text="${human.hasToothpick ? 'Да' : 'Нет'}"></td>
+                <td th:text="${human.car != null ? human.car.name : '—'}"></td>
+                <td class="table-actions">
+                    <a th:href="@{|/humans/${human.id}|}">Просмотр</a>
+                    <a th:href="@{|/humans/${human.id}/edit|}">Изменить</a>
+                </td>
+            </tr>
+            <tr th:if="${humans.content.isEmpty()}">
+                <td colspan="11" class="empty">Нет данных</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination" th:attr="data-page=${page},data-size=${size}">
+            <button type="button" class="page-btn" data-direction="prev" th:disabled="${humans.first}">Назад</button>
+            <span>Страница <strong th:text="${humans.number + 1}"></strong> из <strong th:text="${humans.totalPages == 0 ? 1 : humans.totalPages}"></strong></span>
+            <button type="button" class="page-btn" data-direction="next" th:disabled="${humans.last}">Вперёд</button>
+        </div>
     </div>
 </section>
 </body>
