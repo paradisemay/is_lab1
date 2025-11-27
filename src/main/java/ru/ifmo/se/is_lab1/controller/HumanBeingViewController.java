@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -72,6 +73,15 @@ public class HumanBeingViewController {
     @ModelAttribute("soundtrackSearchRequest")
     public SoundtrackSearchRequest soundtrackSearchRequest() {
         return new SoundtrackSearchRequest();
+    }
+
+    @ModelAttribute("activeTab")
+    public String activeTab(HttpServletRequest request) {
+        String requestUri = request.getRequestURI();
+        if (requestUri != null && requestUri.contains("/humans/create")) {
+            return "create";
+        }
+        return "list";
     }
 
     @GetMapping
