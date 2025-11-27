@@ -288,6 +288,10 @@ button.button.danger {
     z-index: 1000;
 }
 
+.modal-overlay[hidden] {
+    display: none !important;
+}
+
 .modal {
     background: #fff;
     border-radius: 10px;
