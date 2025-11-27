@@ -154,6 +154,7 @@ button.button.danger {
     padding: 16px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    margin-top: 16px;
 }
 
 .alert-error {
