@@ -1,0 +1,3 @@
+filePath
+${__BeanShell(new File(System.getProperty("user.dir"),"docs/jmeter/data/import-batch-1.json").getAbsolutePath(),)}
+${__BeanShell(new File(System.getProperty("user.dir"),"docs/jmeter/data/import-batch-2.json").getAbsolutePath(),)}

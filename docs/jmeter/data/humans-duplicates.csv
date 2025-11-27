@@ -1,0 +1,3 @@
+name,coordinatesX,coordinatesY,realHero,hasToothpick,impactSpeed,soundtrackName,weaponType,mood
+Duplicated Hero,15,6.4,true,true,405,Shared Soundtrack,SHOTGUN,LONGING
+Duplicated Hero,16,7.1,true,true,405,Shared Soundtrack,SHOTGUN,LONGING

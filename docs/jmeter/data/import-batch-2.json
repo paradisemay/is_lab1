@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Batch Hero Shadow",
+    "coordinates": {"x": 18, "y": 3.3},
+    "realHero": true,
+    "hasToothpick": false,
+    "impactSpeed": 480,
+    "soundtrackName": "Parallel Beat",
+    "weaponType": "SHOTGUN",
+    "mood": "GLOOM",
+    "car": {"name": "Jupiter Runner", "cool": true}
+  },
+  {
+    "name": "Batch Hero Flow",
+    "coordinates": {"x": 19, "y": 3.9},
+    "realHero": false,
+    "hasToothpick": true,
+    "impactSpeed": 240,
+    "soundtrackName": "Harmonic Step",
+    "weaponType": "KNIFE",
+    "mood": "LONGING",
+    "car": {"name": "Mercury Glide", "cool": false}
+  }
+]
