@@ -11,25 +11,44 @@
 <body>
 <div class="page-wrapper">
     <header class="page-header">
-        <h1>Люди</h1>
-        <nav>
-            <a th:href="@{/humans}">Список</a>
-            <a th:href="@{/humans/create}">Создать</a>
+        <div class="app-brand">
+            <div class="brand-logo" aria-hidden="true">Л</div>
+            <div class="brand-text">
+                <span class="brand-label">Панель данных</span>
+                <h1>Люди</h1>
+            </div>
+        </div>
+        <nav class="page-tabs" role="tablist">
+            <a class="tab-link" th:classappend="${#httpServletRequest.requestURI.contains('/humans/create')} ? '' : 'active'" th:href="@{/humans}" role="tab">Список</a>
+            <a class="tab-link" th:classappend="${#httpServletRequest.requestURI.contains('/humans/create')} ? 'active' : ''" th:href="@{/humans/create}" role="tab">Создать</a>
         </nav>
-        <form class="user-selector" th:action="@{/humans}" method="get">
-            <label>
-                Имя
-                <input type="text" name="user" th:value="${currentUserName}" placeholder="anonymous">
-            </label>
-            <label>
-                Роль
-                <select name="admin">
-                    <option value="" th:selected="${!currentUserIsAdmin}">Пользователь</option>
-                    <option th:value="${userSelectionAdminFlag}" th:selected="${currentUserIsAdmin}">Администратор</option>
-                </select>
-            </label>
-            <button type="submit">Сменить</button>
-        </form>
+        <div class="user-menu" data-user-menu>
+            <button class="user-avatar" type="button" data-user-toggle aria-haspopup="true" aria-expanded="false">
+                <span class="avatar-circle" aria-hidden="true">👤</span>
+                <div class="user-info">
+                    <span class="user-name" th:text="${currentUserName != null && !#strings.isEmpty(currentUserName) ? currentUserName : 'Гость'}">Гость</span>
+                    <span class="user-role" th:text="${currentUserIsAdmin ? 'Администратор' : 'Пользователь'}">Пользователь</span>
+                </div>
+                <span class="chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="user-dropdown" data-user-panel hidden>
+                <p class="user-dropdown-title">Профиль</p>
+                <form class="user-selector" th:action="@{/humans}" method="get">
+                    <label>
+                        Имя
+                        <input type="text" name="user" th:value="${currentUserName}" placeholder="anonymous">
+                    </label>
+                    <label>
+                        Роль
+                        <select name="admin">
+                            <option value="" th:selected="${!currentUserIsAdmin}">Пользователь</option>
+                            <option th:value="${userSelectionAdminFlag}" th:selected="${currentUserIsAdmin}">Администратор</option>
+                        </select>
+                    </label>
+                    <button type="submit">Сменить</button>
+                </form>
+            </div>
+        </div>
     </header>
     <main th:replace="${content}"></main>
     <footer class="page-footer">
