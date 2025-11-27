@@ -19,8 +19,8 @@
             </div>
         </div>
         <nav class="page-tabs" role="tablist">
-            <a class="tab-link" th:classappend="${#httpServletRequest != null && #httpServletRequest.requestURI.contains('/humans/create')} ? '' : 'active'" th:href="@{/humans}" role="tab">Список</a>
-            <a class="tab-link" th:classappend="${#httpServletRequest != null && #httpServletRequest.requestURI.contains('/humans/create')} ? 'active' : ''" th:href="@{/humans/create}" role="tab">Создать</a>
+            <a class="tab-link" th:classappend="${activeTab} == 'create' ? '' : 'active'" th:href="@{/humans}" role="tab">Список</a>
+            <a class="tab-link" th:classappend="${activeTab} == 'create' ? 'active' : ''" th:href="@{/humans/create}" role="tab">Создать</a>
         </nav>
         <div class="user-menu" data-user-menu>
             <button class="user-avatar" type="button" data-user-toggle aria-haspopup="true" aria-expanded="false">
