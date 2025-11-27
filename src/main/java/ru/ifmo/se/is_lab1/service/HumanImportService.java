@@ -19,6 +19,7 @@ import jakarta.validation.Validator;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -70,7 +71,7 @@ public class HumanImportService {
         this.humanBeingService = humanBeingService;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public int importHumans(MultipartFile file) {
         var operation = importOperationService.startOperation();
         try {

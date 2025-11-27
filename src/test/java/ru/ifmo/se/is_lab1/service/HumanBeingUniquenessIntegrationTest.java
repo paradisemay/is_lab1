@@ -23,12 +23,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
+import ru.ifmo.se.is_lab1.domain.ImportOperation;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFormDto;
 import ru.ifmo.se.is_lab1.model.Mood;
 import ru.ifmo.se.is_lab1.model.WeaponType;
 import ru.ifmo.se.is_lab1.repository.CarRepository;
 import ru.ifmo.se.is_lab1.repository.CoordinatesRepository;
 import ru.ifmo.se.is_lab1.repository.HumanBeingRepository;
+import ru.ifmo.se.is_lab1.repository.HumanBeingSpecifications;
 import ru.ifmo.se.is_lab1.repository.ImportOperationRepository;
 import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
@@ -143,6 +145,100 @@ class HumanBeingUniquenessIntegrationTest {
                 .containsExactlyInAnyOrder("SUCCESS", "FAILED");
     }
 
+    @Test
+    void concurrentUpdateShouldRespectUniqueConstraints() throws Exception {
+        HumanBeingFormDto firstForm = createForm();
+        firstForm.setName("Update Hero A");
+        firstForm.setSoundtrackName("Update Track A");
+        var first = humanBeingService.create(firstForm);
+
+        HumanBeingFormDto secondForm = createForm();
+        secondForm.setName("Update Hero B");
+        secondForm.setSoundtrackName("Update Track B");
+        secondForm.setImpactSpeed(700);
+        var second = humanBeingService.create(secondForm);
+
+        HumanBeingFormDto targetForm = createForm();
+        targetForm.setName("Merged Hero");
+        targetForm.setSoundtrackName("Merged Theme");
+        targetForm.setImpactSpeed(900);
+
+        CountDownLatch startLatch = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        Callable<Throwable> updateFirst = () -> updateHumanBeingConcurrently(startLatch, first.getId(), targetForm);
+        Callable<Throwable> updateSecond = () -> updateHumanBeingConcurrently(startLatch, second.getId(), targetForm);
+
+        List<Future<Throwable>> results = List.of(
+                executorService.submit(updateFirst),
+                executorService.submit(updateSecond)
+        );
+
+        startLatch.countDown();
+
+        long success = 0;
+        long uniquenessFailures = 0;
+        for (Future<Throwable> future : results) {
+            Throwable result = future.get();
+            if (result == null) {
+                success++;
+            } else if (result instanceof HumanBeingUniquenessException) {
+                uniquenessFailures++;
+            } else {
+                throw new AssertionError("Unexpected exception", result);
+            }
+        }
+        executorService.shutdown();
+
+        assertThat(success).isEqualTo(1);
+        assertThat(uniquenessFailures).isEqualTo(1);
+        assertThat(humanBeingRepository.count()).isEqualTo(2);
+        long mergedCount = humanBeingRepository.count(
+                HumanBeingSpecifications.hasNameAndSoundtrack("Merged Hero", "Merged Theme"));
+        assertThat(mergedCount).isEqualTo(1);
+    }
+
+    @Test
+    void importAndCreateInParallelShouldAvoidDuplicates() throws Exception {
+        CountDownLatch startLatch = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        Callable<Throwable> createTask = () -> createHumanBeingConcurrently(startLatch);
+        Callable<Throwable> importTask = () -> importHumansConcurrently(startLatch);
+
+        List<Future<Throwable>> results = List.of(
+                executorService.submit(createTask),
+                executorService.submit(importTask)
+        );
+
+        startLatch.countDown();
+
+        long success = 0;
+        long uniquenessFailures = 0;
+        for (Future<Throwable> future : results) {
+            Throwable result = future.get();
+            if (result == null) {
+                success++;
+            } else if (result instanceof HumanBeingUniquenessException) {
+                uniquenessFailures++;
+            } else {
+                throw new AssertionError("Unexpected exception", result);
+            }
+        }
+        executorService.shutdown();
+
+        assertThat(success).isEqualTo(1);
+        assertThat(uniquenessFailures).isEqualTo(1);
+        assertThat(humanBeingRepository.count()).isEqualTo(1);
+        assertThat(importOperationRepository.count()).isEqualTo(1);
+        ImportOperation operation = importOperationRepository.findAll().get(0);
+        if (operation.getStatus() == ImportOperation.Status.FAILED) {
+            assertThat(operation.getErrorMessage()).isNotBlank();
+        } else {
+            assertThat(operation.getStatus()).isEqualTo(ImportOperation.Status.SUCCESS);
+        }
+    }
+
     private Throwable createHumanBeingConcurrently(CountDownLatch startLatch) {
         try {
             startLatch.await();
@@ -163,6 +259,16 @@ class HumanBeingUniquenessIntegrationTest {
                     buildSingleRecordJson().getBytes(StandardCharsets.UTF_8)
             );
             humanImportService.importHumans(file);
+            return null;
+        } catch (Throwable throwable) {
+            return throwable;
+        }
+    }
+
+    private Throwable updateHumanBeingConcurrently(CountDownLatch startLatch, Long id, HumanBeingFormDto form) {
+        try {
+            startLatch.await();
+            humanBeingService.update(id, form);
             return null;
         } catch (Throwable throwable) {
             return throwable;

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -83,7 +84,7 @@ public class HumanBeingService {
         return humanBeingMapper.toDto(getEntity(id));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public HumanBeingDto create(HumanBeingFormDto form) {
         ensureUniqueConstraints(null, form);
         Coordinates coordinates = coordinatesRepository.save(new Coordinates(form.getCoordinatesX(), form.getCoordinatesY()));
@@ -111,7 +112,7 @@ public class HumanBeingService {
         }
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public HumanBeingDto update(Long id, HumanBeingFormDto form) {
         HumanBeing humanBeing = getEntity(id);
         ensureUniqueConstraints(id, form);
