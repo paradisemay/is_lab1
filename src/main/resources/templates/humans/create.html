@@ -4,9 +4,15 @@
     <title>Создание человека</title>
 </head>
 <body>
-<section>
-    <h2>Создать нового человека</h2>
-    <form th:action="@{/humans}" th:object="${human}" method="post" class="form-card">
+<section class="content-shell">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Новый профиль</p>
+            <h2 class="section-title">Создать человека</h2>
+            <p class="section-subtitle">Заполните характеристики, чтобы добавить запись</p>
+        </div>
+    </div>
+    <form th:action="@{/humans}" th:object="${human}" method="post" class="form-card section-card">
         <div class="alerts" th:if="${#fields.hasGlobalErrors()}">
             <div class="alert alert-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
         </div>

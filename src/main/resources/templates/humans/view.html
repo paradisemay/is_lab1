@@ -4,9 +4,19 @@
     <title>Просмотр человека</title>
 </head>
 <body>
-<section>
-    <div class="detail-card">
-        <h2 th:text="${human.name}">Человек</h2>
+<section class="content-shell">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Профиль</p>
+            <h2 class="section-title" th:text="${human.name}">Человек</h2>
+            <p class="section-subtitle">Подробности записи и быстрые действия</p>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-label">ID</span>
+            <strong th:text="${human.id}"></strong>
+        </div>
+    </div>
+    <div class="detail-card section-card">
         <dl>
             <div>
                 <dt>ID</dt>
