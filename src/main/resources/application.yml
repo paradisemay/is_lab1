@@ -28,4 +28,4 @@ server:
 
 app:
   testdata:
-    enabled: true
+    enabled: false
