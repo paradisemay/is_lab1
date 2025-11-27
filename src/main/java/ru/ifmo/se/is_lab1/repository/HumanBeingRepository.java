@@ -2,9 +2,13 @@ package ru.ifmo.se.is_lab1.repository;
 
 import java.util.List;
 
+import java.util.Optional;
+
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +29,14 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>, J
     List<HumanBeing> findBySoundtrackNameStartingWithIgnoreCase(String prefix);
 
     List<HumanBeing> findByCarIsNull();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select h from HumanBeing h where h.car is null")
+    List<HumanBeing> findByCarIsNullForUpdate();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select h from HumanBeing h where h.id = :id")
+    Optional<HumanBeing> findByIdForUpdate(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true)
     @Query("update HumanBeing h set h.mood = :target where h.mood = :source")
