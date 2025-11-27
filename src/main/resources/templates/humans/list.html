@@ -30,7 +30,13 @@
         <div class="section-card__title">Операции</div>
         <div class="actions-grid">
         <div class="action-card">
-            <h3>Импорт из JSON</h3>
+            <div class="card-heading">
+                <span class="card-logo import" aria-hidden="true">⬆️</span>
+                <div>
+                    <h3>Импорт из JSON</h3>
+                    <p class="card-subtitle">Добавьте новые записи из файла с проверкой формата</p>
+                </div>
+            </div>
             <form id="import-form" th:attr="data-endpoint=${importEndpoint}" enctype="multipart/form-data">
                 <div class="form-field">
                     <label for="importFile">Файл</label>
@@ -47,7 +53,13 @@
             </div>
         </div>
         <div class="action-card">
-            <h3>Массовая смена настроения</h3>
+            <div class="card-heading">
+                <span class="card-logo mood" aria-hidden="true">😊</span>
+                <div>
+                    <h3>Массовая смена настроения</h3>
+                    <p class="card-subtitle">Выберите исходное и новое настроение для группы</p>
+                </div>
+            </div>
             <form th:action="@{/humans/actions/change-mood}" th:object="${moodChangeRequest}" method="post">
                 <div class="form-field" th:classappend="${#fields.hasErrors('sourceMood')} ? ' has-error'">
                     <label for="sourceMood">Текущее настроение</label>
@@ -71,7 +83,13 @@
             </form>
         </div>
         <div class="action-card">
-            <h3>Быстрые операции</h3>
+            <div class="card-heading">
+                <span class="card-logo fast" aria-hidden="true">⚡</span>
+                <div>
+                    <h3>Быстрые операции</h3>
+                    <p class="card-subtitle">Частые действия, доступные в один клик</p>
+                </div>
+            </div>
             <div class="action-buttons">
                 <form th:action="@{/humans/actions/make-gloom}" method="post">
                     <button type="submit" class="button secondary">Сделать всех gloomy</button>
@@ -82,7 +100,13 @@
             </div>
         </div>
         <div class="action-card">
-            <h3>Счётчик по скорости</h3>
+            <div class="card-heading">
+                <span class="card-logo counter" aria-hidden="true">📊</span>
+                <div>
+                    <h3>Счётчик по скорости</h3>
+                    <p class="card-subtitle">Посчитайте людей с ограничением по скорости</p>
+                </div>
+            </div>
             <form th:action="@{/humans/actions/count-impact}" th:object="${impactSpeedRequest}" method="post">
                 <div class="form-field" th:classappend="${#fields.hasErrors('threshold')} ? ' has-error'">
                     <label for="threshold">Порог скорости</label>
@@ -98,7 +122,13 @@
             </div>
         </div>
         <div class="action-card">
-            <h3>Поиск саундтреков</h3>
+            <div class="card-heading">
+                <span class="card-logo sound" aria-hidden="true">🎧</span>
+                <div>
+                    <h3>Поиск саундтреков</h3>
+                    <p class="card-subtitle">Найдите людей по совпадению в названии музыки</p>
+                </div>
+            </div>
             <form th:action="@{/humans/actions/search-soundtrack}" th:object="${soundtrackSearchRequest}" method="post">
                 <div class="form-field" th:classappend="${#fields.hasErrors('prefix')} ? ' has-error'">
                     <label for="soundtrackPrefixInput">Префикс</label>
@@ -125,9 +155,12 @@
          th:attr="data-endpoint=${importHistoryEndpoint},data-admin=${historyIsAdmin}"
          th:if="${importHistory != null}">
         <div class="history-header">
-            <div>
-                <p class="eyebrow">Лог действий</p>
-                <h3 class="section-card__title">История импорта</h3>
+            <div class="card-heading">
+                <span class="card-logo log" aria-hidden="true">📝</span>
+                <div>
+                    <p class="eyebrow">Лог действий</p>
+                    <h3 class="section-card__title">История импорта</h3>
+                </div>
             </div>
             <div class="history-meta">
                 <span th:if="${!historyIsAdmin}" th:text="${'Пользователь: ' + historyUsername}"></span>
@@ -196,6 +229,13 @@
         </div>
     </div>
     <form class="filter-form section-card" method="get">
+        <div class="card-heading">
+            <span class="card-logo summary" aria-hidden="true">🔎</span>
+            <div>
+                <p class="eyebrow">Фильтры</p>
+                <h3 class="section-card__title">Точная выборка</h3>
+            </div>
+        </div>
         <div class="form-grid">
             <label>Имя
                 <input type="text" name="name" th:value="${filter.name}">
@@ -257,7 +297,13 @@
         </div>
     </form>
     <div class="section-card">
-        <div class="section-card__title">Список</div>
+        <div class="card-heading">
+            <span class="card-logo summary" aria-hidden="true">📋</span>
+            <div>
+                <p class="eyebrow">Данные</p>
+                <h3 class="section-card__title">Список</h3>
+            </div>
+        </div>
         <table class="data-table" id="humans-table" data-total-pages="" th:attr="data-total-pages=${humans.totalPages}">
             <thead>
             <tr>
