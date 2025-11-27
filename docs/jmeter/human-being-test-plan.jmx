@@ -169,6 +169,7 @@
               <stringProp name="JSONPostProcessor.defaultValues">-1</stringProp>
               <boolProp name="JSONPostProcessor.compute_concat">false</boolProp>
             </JSONPostProcessor>
+            <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Assert 200 on create" enabled="true">
               <collectionProp name="Asserion.test_strings">
                 <stringProp name="0">200</stringProp>
@@ -177,6 +178,7 @@
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">2</intProp>
             </ResponseAssertion>
+            <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update Human" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -212,6 +214,7 @@
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">2</intProp>
             </ResponseAssertion>
+            <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete Human" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -241,6 +244,7 @@
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">2</intProp>
             </ResponseAssertion>
+            <hashTree/>
           </hashTree>
         </hashTree>
       </hashTree>
@@ -301,6 +305,7 @@
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">16</intProp>
             </ResponseAssertion>
+            <hashTree/>
           </hashTree>
         </hashTree>
         <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Delete branch" enabled="true">
@@ -334,6 +339,7 @@
               <boolProp name="Assertion.assume_success">false</boolProp>
               <intProp name="Assertion.test_type">16</intProp>
             </ResponseAssertion>
+            <hashTree/>
           </hashTree>
         </hashTree>
       </hashTree>
@@ -389,6 +395,7 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Assert uniqueness message" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="0">Нарушение уникальности</stringProp>
@@ -399,6 +406,7 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">32</intProp>
           </ResponseAssertion>
+          <hashTree/>
         </hashTree>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Mass Import Overlap" enabled="true">
@@ -456,6 +464,7 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Assert import conflict message" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="0">Нарушение уникальности</stringProp>
@@ -466,6 +475,7 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">32</intProp>
           </ResponseAssertion>
+          <hashTree/>
         </hashTree>
       </hashTree>
     </hashTree>
