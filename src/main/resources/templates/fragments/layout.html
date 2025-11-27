@@ -24,8 +24,8 @@
             <label>
                 Роль
                 <select name="admin">
-                    <option value="false" th:selected="${!currentUserIsAdmin}">Пользователь</option>
-                    <option value="true" th:selected="${currentUserIsAdmin}">Администратор</option>
+                    <option value="" th:selected="${!currentUserIsAdmin}">Пользователь</option>
+                    <option th:value="${userSelectionAdminFlag}" th:selected="${currentUserIsAdmin}">Администратор</option>
                 </select>
             </label>
             <button type="submit">Сменить</button>

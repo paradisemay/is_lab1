@@ -1,6 +1,7 @@
 package ru.ifmo.se.is_lab1.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.ifmo.se.is_lab1.service.security.UserSelectionInterceptor;
 
 @Configuration
+@EnableConfigurationProperties(UserSelectionProperties.class)
 public class UserSelectionConfiguration implements WebMvcConfigurer {
 
     private final UserSelectionInterceptor userSelectionInterceptor;
