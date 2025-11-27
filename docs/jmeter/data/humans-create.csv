@@ -1,0 +1,4 @@
+name,coordinatesX,coordinatesY,realHero,hasToothpick,impactSpeed,soundtrackName,weaponType,mood,carId
+Nova Runner,12,15.5,true,true,120,Skyline Pulse,SHOTGUN,LONGING,null
+Aurora Trace,5,3.7,false,true,210,Silver Echo,KNIFE,SADNESS,null
+Crimson Orbit,42,8.4,true,false,330,Red Horizon,BAT,GLOOM,null

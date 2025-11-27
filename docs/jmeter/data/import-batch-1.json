@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Batch Hero One",
+    "coordinates": {"x": 10, "y": 1.1},
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 480,
+    "soundtrackName": "Parallel Beat",
+    "weaponType": "MACHINE_GUN",
+    "mood": "LONGING",
+    "car": {"name": "Jupiter Runner", "cool": true}
+  },
+  {
+    "name": "Batch Hero Two",
+    "coordinates": {"x": 14, "y": 2.4},
+    "realHero": false,
+    "hasToothpick": true,
+    "impactSpeed": 220,
+    "soundtrackName": "Sonic Line",
+    "weaponType": "BAT",
+    "mood": "SADNESS",
+    "car": {"name": "Mercury Glide", "cool": false}
+  }
+]
