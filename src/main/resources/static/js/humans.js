@@ -4,6 +4,7 @@
         setupWebSocket();
         const history = setupImportHistory();
         setupImport(history);
+        setupImportHelp();
     });
 
     function setupPagination() {
@@ -209,5 +210,36 @@
         return {
             reload: load
         };
+    }
+
+    function setupImportHelp() {
+        const openButton = document.querySelector('[data-import-help]');
+        const modal = document.getElementById('import-help-modal');
+        const modalBody = modal?.querySelector('.modal-body');
+        const closeButton = modal?.querySelector('[data-modal-close]');
+        const content = document.getElementById('import-help-content');
+
+        if (!openButton || !modal || !modalBody || !content) {
+            return;
+        }
+
+        const showModal = () => {
+            modalBody.innerHTML = content.innerHTML;
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+        };
+
+        const hideModal = () => {
+            modal.hidden = true;
+            document.body.classList.remove('modal-open');
+        };
+
+        openButton.addEventListener('click', showModal);
+        closeButton?.addEventListener('click', hideModal);
+        modal.addEventListener('click', event => {
+            if (event.target === modal) {
+                hideModal();
+            }
+        });
     }
 })();

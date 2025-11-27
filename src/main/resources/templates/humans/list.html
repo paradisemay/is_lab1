@@ -23,6 +23,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit">Загрузить</button>
+                    <button type="button" class="button secondary" data-import-help>Описание формата</button>
                 </div>
             </form>
             <div class="action-results">
@@ -139,6 +140,41 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div id="import-help-content" hidden>
+        <h4>Формат файла</h4>
+        <p>Импорт ожидает JSON-файл с массивом записей о людях. Каждая запись должна содержать следующий набор полей:</p>
+        <ul>
+            <li><strong>name</strong> — обязательная строка длиной до 255 символов.</li>
+            <li><strong>coordinates</strong> — объект с координатами:
+                <ul>
+                    <li><strong>x</strong> — обязательное целое число.</li>
+                    <li><strong>y</strong> — обязательное неотрицательное число с плавающей точкой.</li>
+                </ul>
+            </li>
+            <li><strong>realHero</strong> — обязательное логическое значение.</li>
+            <li><strong>hasToothpick</strong> — обязательное логическое значение.</li>
+            <li><strong>impactSpeed</strong> — обязательное целое число &gt; 0 и ≤ 907.</li>
+            <li><strong>soundtrackName</strong> — обязательная строка длиной до 255 символов.</li>
+            <li><strong>weaponType</strong> — обязательная строка со значением одного из перечислений: <code>SHOTGUN</code>, <code>KNIFE</code>, <code>MACHINE_GUN</code>, <code>BAT</code>.</li>
+            <li><strong>mood</strong> — обязательная строка со значением одного из перечислений: <code>SADNESS</code>, <code>LONGING</code>, <code>GLOOM</code>.</li>
+            <li><strong>car</strong> — объект с данными автомобиля:
+                <ul>
+                    <li><strong>name</strong> — обязательная строка длиной до 120 символов.</li>
+                    <li><strong>cool</strong> — обязательное логическое значение.</li>
+                </ul>
+            </li>
+        </ul>
+        <p>Файл должен содержать хотя бы одну запись; неизвестные поля в объектах будут проигнорированы.</p>
+    </div>
+    <div class="modal-overlay" id="import-help-modal" hidden>
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Описание формата импорта</h3>
+                <button type="button" class="button secondary" data-modal-close>&#10005;</button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
     </div>
     <form class="filter-form" method="get">
         <div class="form-grid">
