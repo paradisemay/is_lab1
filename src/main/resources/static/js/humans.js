@@ -5,6 +5,7 @@
         const history = setupImportHistory();
         setupImport(history);
         setupImportHelp();
+        setupUserMenu();
     });
 
     function setupPagination() {
@@ -239,6 +240,48 @@
         modal.addEventListener('click', event => {
             if (event.target === modal) {
                 hideModal();
+            }
+        });
+    }
+
+    function setupUserMenu() {
+        const menu = document.querySelector('[data-user-menu]');
+        const toggle = document.querySelector('[data-user-toggle]');
+        const panel = document.querySelector('[data-user-panel]');
+        if (!menu || !toggle || !panel) {
+            return;
+        }
+
+        const open = () => {
+            panel.hidden = false;
+            menu.classList.add('open');
+            toggle.setAttribute('aria-expanded', 'true');
+        };
+
+        const close = () => {
+            panel.hidden = true;
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        };
+
+        toggle.addEventListener('click', event => {
+            event.stopPropagation();
+            if (panel.hidden) {
+                open();
+            } else {
+                close();
+            }
+        });
+
+        document.addEventListener('click', event => {
+            if (!menu.contains(event.target)) {
+                close();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                close();
             }
         });
     }
