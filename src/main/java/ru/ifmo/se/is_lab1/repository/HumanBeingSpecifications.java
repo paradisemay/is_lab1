@@ -51,16 +51,10 @@ public final class HumanBeingSpecifications {
     public static Specification<HumanBeing> hasNameAndSoundtrack(String name, String soundtrackName) {
         String normalizedName = name.trim().toLowerCase();
         String normalizedSoundtrack = soundtrackName.trim().toLowerCase();
-        return (root, query, builder) -> {
-            var trimmedName = builder.lower(builder.function("regexp_replace", String.class,
-                    root.get("name"), builder.literal("^\\s+|\\s+$"), builder.literal("")));
-            var trimmedSoundtrack = builder.lower(builder.function("regexp_replace", String.class,
-                    root.get("soundtrackName"), builder.literal("^\\s+|\\s+$"), builder.literal("")));
-            return builder.and(
-                    builder.equal(trimmedName, normalizedName),
-                    builder.equal(trimmedSoundtrack, normalizedSoundtrack)
-            );
-        };
+        return (root, query, builder) -> builder.and(
+                builder.equal(root.get("nameNormalized"), normalizedName),
+                builder.equal(root.get("soundtrackNameNormalized"), normalizedSoundtrack)
+        );
     }
 
     public static Specification<HumanBeing> isRealHeroWithImpactSpeed(int impactSpeed) {

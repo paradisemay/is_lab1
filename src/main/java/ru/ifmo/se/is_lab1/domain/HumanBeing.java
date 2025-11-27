@@ -14,6 +14,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -75,6 +77,15 @@ public class HumanBeing {
     @JoinColumn(name = "car_id")
     private Car car;
 
+    @Column(name = "name_normalized", length = 255)
+    private String nameNormalized;
+
+    @Column(name = "soundtrack_name_normalized", length = 255)
+    private String soundtrackNameNormalized;
+
+    @Column(name = "real_hero_impact_key")
+    private Integer realHeroImpactKey;
+
     protected HumanBeing() {
     }
 
@@ -96,6 +107,7 @@ public class HumanBeing {
         this.weaponType = weaponType;
         this.mood = mood;
         this.car = car;
+        updateDerivedFields();
     }
 
     public Long getId() {
@@ -176,5 +188,13 @@ public class HumanBeing {
 
     public void setCar(Car car) {
         this.car = car;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void updateDerivedFields() {
+        this.nameNormalized = name != null ? name.trim().toLowerCase() : null;
+        this.soundtrackNameNormalized = soundtrackName != null ? soundtrackName.trim().toLowerCase() : null;
+        this.realHeroImpactKey = Boolean.TRUE.equals(realHero) ? impactSpeed : null;
     }
 }

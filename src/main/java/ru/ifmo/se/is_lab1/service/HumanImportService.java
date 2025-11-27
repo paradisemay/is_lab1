@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -139,10 +140,15 @@ public class HumanImportService {
                 humansToSave.add(humanBeing);
             }
             List<HumanBeing> saved = humanBeingRepository.saveAll(humansToSave);
+            humanBeingRepository.flush();
             int imported = saved.size();
             importOperationService.markSuccess(operation.getId(), imported);
             publishAfterCommit();
             return imported;
+        } catch (DataIntegrityViolationException e) {
+            HumanBeingUniquenessException translated = HumanBeingUniquenessResolver.translate(e);
+            importOperationService.markFailure(operation.getId(), resolveErrorMessage(translated));
+            throw translated;
         } catch (RuntimeException e) {
             importOperationService.markFailure(operation.getId(), resolveErrorMessage(e));
             throw e;

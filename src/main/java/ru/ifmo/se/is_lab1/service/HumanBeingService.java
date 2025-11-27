@@ -3,6 +3,7 @@ package ru.ifmo.se.is_lab1.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -100,10 +101,14 @@ public class HumanBeingService {
                 form.getMood(),
                 car
         );
-        HumanBeing saved = humanBeingRepository.save(humanBeing);
-        HumanBeingDto dto = humanBeingMapper.toDto(saved);
-        publishChange(new HumanBeingEvent(HumanBeingEventType.CREATED, dto));
-        return dto;
+        try {
+            HumanBeing saved = humanBeingRepository.saveAndFlush(humanBeing);
+            HumanBeingDto dto = humanBeingMapper.toDto(saved);
+            publishChange(new HumanBeingEvent(HumanBeingEventType.CREATED, dto));
+            return dto;
+        } catch (DataIntegrityViolationException ex) {
+            throw HumanBeingUniquenessResolver.translate(ex);
+        }
     }
 
     @Transactional
@@ -119,9 +124,14 @@ public class HumanBeingService {
         }
         Car car = resolveCar(form.getCarId());
         humanBeingMapper.updateEntity(humanBeing, form, coordinates, car);
-        HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
-        publishChange(new HumanBeingEvent(HumanBeingEventType.UPDATED, dto));
-        return dto;
+        try {
+            humanBeingRepository.saveAndFlush(humanBeing);
+            HumanBeingDto dto = humanBeingMapper.toDto(humanBeing);
+            publishChange(new HumanBeingEvent(HumanBeingEventType.UPDATED, dto));
+            return dto;
+        } catch (DataIntegrityViolationException ex) {
+            throw HumanBeingUniquenessResolver.translate(ex);
+        }
     }
 
     @Transactional

@@ -116,7 +116,7 @@ class HumanBeingServiceTest {
         form.setCarId(null);
         HumanBeingDto dto = new HumanBeingDto();
         when(coordinatesRepository.save(any(Coordinates.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(humanBeingRepository.save(any(HumanBeing.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(humanBeingRepository.saveAndFlush(any(HumanBeing.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(humanBeingMapper.toDto(any(HumanBeing.class))).thenReturn(dto);
         when(humanBeingRepository.count()).thenReturn(5L);
         when(humanBeingRepository.sumImpactSpeed()).thenReturn(20L);
@@ -126,7 +126,7 @@ class HumanBeingServiceTest {
         assertThat(result).isSameAs(dto);
 
         ArgumentCaptor<HumanBeing> humanCaptor = ArgumentCaptor.forClass(HumanBeing.class);
-        verify(humanBeingRepository).save(humanCaptor.capture());
+        verify(humanBeingRepository).saveAndFlush(humanCaptor.capture());
         HumanBeing saved = humanCaptor.getValue();
         assertThat(saved.getName()).isEqualTo(form.getName());
         assertThat(saved.getImpactSpeed()).isEqualTo(form.getImpactSpeed());
