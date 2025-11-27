@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Аркадий Спектральный",
+    "coordinates": {
+      "x": 12,
+      "y": 45.5
+    },
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 150,
+    "soundtrackName": "Городские огни",
+    "weaponType": "SHOTGUN",
+    "mood": "SADNESS",
+    "car": {
+      "name": "Ласточка «Небесный патруль»",
+      "cool": true
+    }
+  },
+  {
+    "name": "Вера Орбитальная",
+    "coordinates": {
+      "x": -23,
+      "y": 5.0
+    },
+    "realHero": false,
+    "hasToothpick": false,
+    "impactSpeed": 320,
+    "soundtrackName": "Северный ветер",
+    "weaponType": "KNIFE",
+    "mood": "LONGING",
+    "car": {
+      "name": "Туманность-кабриолет",
+      "cool": false
+    }
+  },
+  {
+    "name": "Дамир Радиационный",
+    "coordinates": {
+      "x": 7,
+      "y": 120.75
+    },
+    "realHero": true,
+    "hasToothpick": true,
+    "impactSpeed": 480,
+    "soundtrackName": "Дрифтовая зона",
+    "weaponType": "MACHINE_GUN",
+    "mood": "GLOOM",
+    "car": {
+      "name": "Ласточка «Небесный патруль»",
+      "cool": true
+    }
+  }
+]
