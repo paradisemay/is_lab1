@@ -89,7 +89,7 @@ public class HumanBeingService {
         return humanBeingMapper.toDto(getEntity(id));
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -123,7 +123,7 @@ public class HumanBeingService {
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -152,7 +152,7 @@ public class HumanBeingService {
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -192,7 +192,7 @@ public class HumanBeingService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -207,7 +207,7 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -222,7 +222,7 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
@@ -242,7 +242,7 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
             CannotSerializeTransactionException.class,
