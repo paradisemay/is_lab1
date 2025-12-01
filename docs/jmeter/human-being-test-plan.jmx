@@ -71,7 +71,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Humans Create" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">docs/jmeter/data/humans-create.csv</stringProp>
+        <stringProp name="filename">data/humans-create.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <stringProp name="recycle">false</stringProp>
@@ -83,7 +83,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Humans Update" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">docs/jmeter/data/humans-update.csv</stringProp>
+        <stringProp name="filename">data/humans-update.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <stringProp name="recycle">false</stringProp>
@@ -95,7 +95,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Duplicates" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">docs/jmeter/data/humans-duplicates.csv</stringProp>
+        <stringProp name="filename">data/humans-duplicates.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <stringProp name="recycle">true</stringProp>
@@ -107,7 +107,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Import Jobs" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">docs/jmeter/data/import-jobs.csv</stringProp>
+        <stringProp name="filename">data/import-jobs.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <stringProp name="recycle">false</stringProp>
@@ -263,7 +263,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SynchronizingTimerGui" testclass="SyncTimer" testname="Sync before conflict" enabled="true">
+        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync before conflict" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
@@ -358,7 +358,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SynchronizingTimerGui" testclass="SyncTimer" testname="Sync duplicate start" enabled="true">
+        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync duplicate start" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
@@ -424,7 +424,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SynchronizingTimerGui" testclass="SyncTimer" testname="Sync import start" enabled="true">
+        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync import start" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
