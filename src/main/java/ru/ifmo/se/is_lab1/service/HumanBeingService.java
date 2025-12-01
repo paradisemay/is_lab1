@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.CannotAcquireLockException;
+import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.CannotSerializeTransactionException;
 import org.springframework.data.domain.Page;
@@ -91,9 +92,10 @@ public class HumanBeingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
-            CannotSerializeTransactionException.class
-    }, maxAttempts = 3,
-            backoff = @Backoff(delay = 100, multiplier = 2))
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public HumanBeingDto create(HumanBeingFormDto form) {
         ensureUniqueConstraints(null, form);
         Coordinates coordinates = coordinatesRepository.save(new Coordinates(form.getCoordinatesX(), form.getCoordinatesY()));
@@ -124,9 +126,10 @@ public class HumanBeingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Retryable(retryFor = {
             CannotAcquireLockException.class,
-            CannotSerializeTransactionException.class
-    }, maxAttempts = 3,
-            backoff = @Backoff(delay = 100, multiplier = 2))
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public HumanBeingDto update(Long id, HumanBeingFormDto form) {
         HumanBeing humanBeing = getEntity(id);
         ensureUniqueConstraints(id, form);
