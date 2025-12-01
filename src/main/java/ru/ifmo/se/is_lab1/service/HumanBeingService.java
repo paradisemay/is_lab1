@@ -38,13 +38,6 @@ import ru.ifmo.se.is_lab1.service.event.HumanBeingEventType;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingDeletionException;
 import ru.ifmo.se.is_lab1.service.exception.HumanBeingUniquenessException;
 
-/**
- * Сервис работы с людьми. Дополнительные бизнес-ограничения уникальности:
- * <ul>
- *     <li>Комбинация имени и названия саундтрека уникальна (без учёта регистра).</li>
- *     <li>Для настоящих героев (realHero = true) скорость удара уникальна.</li>
- * </ul>
- */
 @Service
 @Transactional(readOnly = true)
 public class HumanBeingService {

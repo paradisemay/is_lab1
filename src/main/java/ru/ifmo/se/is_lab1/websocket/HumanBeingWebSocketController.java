@@ -20,7 +20,6 @@ public class HumanBeingWebSocketController {
 
     @MessageMapping("/humans/summary")
     public void summary() {
-        // Ответ формируется обработчиком подписки для предотвращения гонок при установке соединения.
     }
 
     @MessageMapping("/humans/impact-speed/count")

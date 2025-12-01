@@ -110,9 +110,7 @@
                 let payload = {};
                 try {
                     payload = await response.json();
-                } catch (parseError) {
-                    // ignore parsing error for non-JSON responses
-                }
+                } catch (parseError) {}
                 if (!response.ok) {
                     const message = payload.error || payload.message || 'Не удалось импортировать данные';
                     showMessage(errorBox, message);
