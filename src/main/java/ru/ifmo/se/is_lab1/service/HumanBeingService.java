@@ -3,6 +3,7 @@ package ru.ifmo.se.is_lab1.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 import ru.ifmo.se.is_lab1.dto.HumanBeingDto;
 import ru.ifmo.se.is_lab1.dto.HumanBeingFilter;
@@ -85,6 +88,8 @@ public class HumanBeingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3,
+            backoff = @Backoff(delay = 100, multiplier = 2))
     public HumanBeingDto create(HumanBeingFormDto form) {
         ensureUniqueConstraints(null, form);
         Coordinates coordinates = coordinatesRepository.save(new Coordinates(form.getCoordinatesX(), form.getCoordinatesY()));
@@ -113,6 +118,8 @@ public class HumanBeingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3,
+            backoff = @Backoff(delay = 100, multiplier = 2))
     public HumanBeingDto update(Long id, HumanBeingFormDto form) {
         HumanBeing humanBeing = getEntity(id);
         ensureUniqueConstraints(id, form);
