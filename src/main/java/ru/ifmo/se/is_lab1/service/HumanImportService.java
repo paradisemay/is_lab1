@@ -17,13 +17,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.CannotSerializeTransactionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 import ru.ifmo.se.is_lab1.domain.Car;
 import ru.ifmo.se.is_lab1.domain.Coordinates;
@@ -72,6 +77,12 @@ public class HumanImportService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public int importHumans(MultipartFile file) {
         var operation = importOperationService.startOperation();
         try {
