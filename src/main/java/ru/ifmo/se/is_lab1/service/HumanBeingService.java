@@ -152,7 +152,13 @@ public class HumanBeingService {
         }
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public void delete(Long id) {
         HumanBeing humanBeing = humanBeingRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new IllegalArgumentException("Человек с указанным идентификатором не найден"));
@@ -186,7 +192,13 @@ public class HumanBeingService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public int bulkUpdateMood(Mood source, Mood target) {
         int updated = humanBeingRepository.bulkUpdateMood(source, target);
         if (updated > 0) {
@@ -195,7 +207,13 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public int updateMoodToGloom() {
         int updated = humanBeingRepository.updateMoodForAll(Mood.GLOOM);
         if (updated > 0) {
@@ -204,7 +222,13 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public int assignDefaultCarToHeroesWithoutCar() {
         if (humanBeingRepository.findByCarIsNullForUpdate().isEmpty()) {
             return 0;
@@ -218,7 +242,13 @@ public class HumanBeingService {
         return updated;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class,
+            PSQLException.class
+    }, maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
     public HumanBeingDto assignCar(Long humanId, Long carId) {
         HumanBeing humanBeing = humanBeingRepository.findByIdForUpdate(humanId)
                 .orElseThrow(() -> new IllegalArgumentException("Человек с указанным идентификатором не найден"));
