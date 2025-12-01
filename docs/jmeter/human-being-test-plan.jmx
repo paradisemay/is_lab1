@@ -263,7 +263,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync before conflict" enabled="true">
+        <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Sync before conflict" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
@@ -358,7 +358,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync duplicate start" enabled="true">
+        <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Sync duplicate start" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
@@ -424,7 +424,7 @@
         <stringProp name="ThreadGroup.delay"/>
       </ThreadGroup>
       <hashTree>
-        <SyncTimer guiclass="SyncTimerGui" testclass="SyncTimer" testname="Sync import start" enabled="true">
+        <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Sync import start" enabled="true">
           <stringProp name="GroupSize">2</stringProp>
           <stringProp name="TimeoutInMs">5000</stringProp>
         </SyncTimer>
