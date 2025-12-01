@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.CannotSerializeTransactionException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -88,7 +89,10 @@ public class HumanBeingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3,
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class
+    }, maxAttempts = 3,
             backoff = @Backoff(delay = 100, multiplier = 2))
     public HumanBeingDto create(HumanBeingFormDto form) {
         ensureUniqueConstraints(null, form);
@@ -118,7 +122,10 @@ public class HumanBeingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3,
+    @Retryable(retryFor = {
+            CannotAcquireLockException.class,
+            CannotSerializeTransactionException.class
+    }, maxAttempts = 3,
             backoff = @Backoff(delay = 100, multiplier = 2))
     public HumanBeingDto update(Long id, HumanBeingFormDto form) {
         HumanBeing humanBeing = getEntity(id);
