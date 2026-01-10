@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5434/studs
+    url: jdbc:postgresql://localhost:5434/studs?sslmode=disable
     username: s409117
     password: k8H5ZFzdG34IGY3X
     hikari:
