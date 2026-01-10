@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +36,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @AutoConfigureMockMvc
 @Transactional
 @ContextConfiguration(initializers = HumanBeingViewControllerIntegrationTest.DataSourceInitializer.class)
+@Import(TestConfig.class)
 class HumanBeingViewControllerIntegrationTest {
 
     @Autowired
@@ -106,7 +109,8 @@ class HumanBeingViewControllerIntegrationTest {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
                     "spring.datasource.url=jdbc:h2:mem:controllerdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
                     "spring.jpa.hibernate.ddl-auto=update",
-                    "spring.flyway.enabled=false");
+                    "spring.flyway.enabled=false",
+                    "app.minio.enabled=false");
         }
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -29,6 +31,7 @@ import ru.ifmo.se.is_lab1.service.security.UserContextHolder;
 @SpringBootTest
 @Transactional
 @ContextConfiguration(initializers = HumanImportServiceIntegrationTest.DataSourceInitializer.class)
+@Import(TestConfig.class)
 class HumanImportServiceIntegrationTest {
 
     @Autowired
@@ -77,15 +80,15 @@ class HumanImportServiceIntegrationTest {
 
         int imported = humanImportService.importHumans(file);
 
-        assertThat(imported).isEqualTo(3);
-        assertThat(humanBeingRepository.count()).isEqualTo(3);
-        assertThat(carRepository.count()).isEqualTo(2);
-        assertThat(coordinatesRepository.count()).isEqualTo(3);
+        assertThat(imported).isEqualTo(4);
+        assertThat(humanBeingRepository.count()).isEqualTo(4);
+        assertThat(carRepository.count()).isEqualTo(4);
+        assertThat(coordinatesRepository.count()).isEqualTo(4);
         assertThat(importOperationRepository.count()).isEqualTo(1);
 
-        ImportOperation operation = importOperationRepository.findAll().getFirst();
+        ImportOperation operation = importOperationRepository.findAll().get(0);
         assertThat(operation.getStatus()).isEqualTo(ImportOperation.Status.SUCCESS);
-        assertThat(operation.getAddedCount()).isEqualTo(3);
+        assertThat(operation.getAddedCount()).isEqualTo(4);
         assertThat(operation.getInitiator()).isEqualTo("import-tester");
     }
 
@@ -96,7 +99,8 @@ class HumanImportServiceIntegrationTest {
                     "spring.datasource.url=jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
                     "spring.jpa.hibernate.ddl-auto=update",
                     "spring.flyway.enabled=false",
-                    "app.testdata.enabled=false");
+                    "app.testdata.enabled=false",
+                    "app.minio.enabled=false");
         }
     }
 }

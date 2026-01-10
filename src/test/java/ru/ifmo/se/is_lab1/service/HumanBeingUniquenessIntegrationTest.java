@@ -19,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -38,6 +40,7 @@ import ru.ifmo.se.is_lab1.service.security.UserContextHolder;
 
 @SpringBootTest
 @ContextConfiguration(initializers = HumanBeingUniquenessIntegrationTest.DataSourceInitializer.class)
+@Import(TestConfig.class)
 class HumanBeingUniquenessIntegrationTest {
 
     @Autowired
@@ -315,6 +318,7 @@ class HumanBeingUniquenessIntegrationTest {
             properties.add("app.testdata.enabled=false");
             properties.add("spring.jpa.open-in-view=false");
             properties.add("spring.jpa.show-sql=false");
+            properties.add("app.minio.enabled=false");
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
                     properties.toArray(new String[0]));
         }

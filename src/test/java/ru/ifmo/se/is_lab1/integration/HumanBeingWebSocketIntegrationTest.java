@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -37,6 +39,7 @@ import ru.ifmo.se.is_lab1.repository.CoordinatesRepository;
 import ru.ifmo.se.is_lab1.repository.HumanBeingRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestConfig.class)
 class HumanBeingWebSocketIntegrationTest {
 
     @LocalServerPort

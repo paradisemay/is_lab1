@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -33,6 +35,7 @@ import ru.ifmo.se.is_lab1.service.HumanBeingService;
 
 @SpringBootTest
 @ContextConfiguration(initializers = HumanBeingConcurrentAssignmentIntegrationTest.DataSourceInitializer.class)
+@Import(TestConfig.class)
 class HumanBeingConcurrentAssignmentIntegrationTest {
 
     @Autowired
@@ -168,7 +171,8 @@ class HumanBeingConcurrentAssignmentIntegrationTest {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
                     "spring.datasource.url=jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
                     "spring.jpa.hibernate.ddl-auto=update",
-                    "spring.flyway.enabled=false");
+                    "spring.flyway.enabled=false",
+                    "app.minio.enabled=false");
         }
     }
 }

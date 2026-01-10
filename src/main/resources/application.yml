@@ -1,14 +1,29 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5434/studs
+    url: jdbc:postgresql://localhost:5434/studs?sslmode=disable
     username: s409117
     password: k8H5ZFzdG34IGY3X
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        cache:
+          use_second_level_cache: true
+          use_query_cache: false
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        javax:
+          cache:
+            provider: org.ehcache.jsr107.EhcacheCachingProvider
+            uri: classpath:ehcache.xml
     open-in-view: false
   thymeleaf:
     cache: false
@@ -29,3 +44,11 @@ server:
 app:
   testdata:
     enabled: false
+  cache:
+    stats:
+      enabled: true
+  minio:
+    url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: import-files
