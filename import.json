@@ -7,64 +7,13 @@
     },
     "realHero": true,
     "hasToothpick": false,
-    "impactSpeed": 275,
+    "impactSpeed": 907,
     "soundtrackName": "Северный рассвет",
     "weaponType": "BAT",
     "mood": "GLOOM",
     "car": {
       "name": "Метелица-купе",
       "cool": true
-    }
-  },
-  {
-    "name": "Леонид Навигационный",
-    "coordinates": {
-      "x": -15,
-      "y": 230.0
-    },
-    "realHero": false,
-    "hasToothpick": true,
-    "impactSpeed": 520,
-    "soundtrackName": "Карта ветров",
-    "weaponType": "MACHINE_GUN",
-    "mood": "LONGING",
-    "car": {
-      "name": "Степной странник",
-      "cool": false
-    }
-  },
-  {
-    "name": "София Восход",
-    "coordinates": {
-      "x": 9,
-      "y": 87.4
-    },
-    "realHero": true,
-    "hasToothpick": true,
-    "impactSpeed": 610,
-    "soundtrackName": "Первый свет",
-    "weaponType": "SHOTGUN",
-    "mood": "SADNESS",
-    "car": {
-      "name": "Алый глайдер",
-      "cool": true
-    }
-  },
-  {
-    "name": "Илья Маршевый",
-    "coordinates": {
-      "x": 0,
-      "y": 15.0
-    },
-    "realHero": false,
-    "hasToothpick": false,
-    "impactSpeed": 145,
-    "soundtrackName": "Дорога домой",
-    "weaponType": "KNIFE",
-    "mood": "LONGING",
-    "car": {
-      "name": "Зелёный трамонтана",
-      "cool": false
     }
   }
 ]
