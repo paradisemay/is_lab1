@@ -40,6 +40,9 @@ public class ImportOperation {
     @Column(name = "error_message", length = 1024)
     private String errorMessage;
 
+    @Column(name = "file_path", length = 1024)
+    private String filePath;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -100,6 +103,14 @@ public class ImportOperation {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public OffsetDateTime getCreatedAt() {

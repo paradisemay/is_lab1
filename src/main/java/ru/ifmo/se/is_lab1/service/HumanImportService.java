@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,6 +19,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import org.postgresql.util.PSQLException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.CannotSerializeTransactionException;
@@ -57,6 +59,10 @@ public class HumanImportService {
     private final HumanBeingEventPublisher eventPublisher;
     private final ImportOperationService importOperationService;
     private final HumanBeingService humanBeingService;
+    private final FileStorageService fileStorageService;
+
+    // Self-injection to allow internal method calls to go through proxy
+    private final HumanImportService self;
 
     public HumanImportService(ObjectMapper objectMapper,
                               Validator validator,
@@ -65,7 +71,9 @@ public class HumanImportService {
                               HumanBeingRepository humanBeingRepository,
                               HumanBeingEventPublisher eventPublisher,
                               ImportOperationService importOperationService,
-                              HumanBeingService humanBeingService) {
+                              HumanBeingService humanBeingService,
+                              FileStorageService fileStorageService,
+                              @Lazy HumanImportService self) {
         this.objectMapper = objectMapper;
         this.validator = validator;
         this.coordinatesRepository = coordinatesRepository;
@@ -74,6 +82,40 @@ public class HumanImportService {
         this.eventPublisher = eventPublisher;
         this.importOperationService = importOperationService;
         this.humanBeingService = humanBeingService;
+        this.fileStorageService = fileStorageService;
+        this.self = self;
+    }
+
+    public int importHumans(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new HumanImportException("Файл импорта не должен быть пустым");
+        }
+
+        // 1. Upload to MinIO (First Phase of distributed transaction)
+        String fileName = "import_" + UUID.randomUUID() + ".json";
+        String uploadedFileKey;
+        try (InputStream is = file.getInputStream()) {
+            uploadedFileKey = fileStorageService.uploadFile(fileName, is, file.getContentType());
+        } catch (IOException e) {
+            throw new HumanImportException("Failed to read/upload file: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            throw new HumanImportException("Failed to upload file to storage: " + e.getMessage(), e);
+        }
+
+        // 2. Execute DB Transaction (Second Phase)
+        try {
+            // Using self reference to ensure transaction proxy is used
+            return self.processImportTransaction(uploadedFileKey);
+        } catch (Exception e) {
+            // Compensation: Delete file if DB transaction failed
+            try {
+                fileStorageService.deleteFile(uploadedFileKey);
+            } catch (Exception deleteEx) {
+                // Log failure to compensate?
+                System.err.println("Failed to compensate (delete file) after transaction failure: " + deleteEx.getMessage());
+            }
+            throw e;
+        }
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -83,10 +125,17 @@ public class HumanImportService {
             PSQLException.class
     }, maxAttempts = 5,
             backoff = @Backoff(delay = 100, multiplier = 2, maxDelay = 1600))
-    public int importHumans(MultipartFile file) {
-        var operation = importOperationService.startOperation();
+    public int processImportTransaction(String fileKey) {
+        var operation = importOperationService.startOperation(fileKey);
         try {
-            List<HumanImportRecordDto> records = readRecords(file);
+            List<HumanImportRecordDto> records;
+            // Read back from storage to ensure we are processing what was stored
+            try (InputStream is = fileStorageService.downloadFile(fileKey)) {
+                 records = objectMapper.readValue(is, new TypeReference<List<HumanImportRecordDto>>() {});
+            } catch (IOException e) {
+                 throw new HumanImportException("Failed to read file from storage: " + e.getMessage(), e);
+            }
+
             if (records.isEmpty()) {
                 throw new HumanImportException("Файл не содержит данных для импорта");
             }
@@ -179,18 +228,6 @@ public class HumanImportService {
             return message.substring(0, 1000);
         }
         return message;
-    }
-
-    private List<HumanImportRecordDto> readRecords(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new HumanImportException("Файл импорта не должен быть пустым");
-        }
-        try (InputStream inputStream = file.getInputStream()) {
-            return objectMapper.readValue(inputStream, new TypeReference<List<HumanImportRecordDto>>() {
-            });
-        } catch (IOException e) {
-            throw new HumanImportException("Не удалось прочитать JSON: " + e.getMessage(), e);
-        }
     }
 
     private void validateRecords(List<HumanImportRecordDto> records) {

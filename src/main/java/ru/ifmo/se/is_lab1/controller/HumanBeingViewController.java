@@ -1,17 +1,23 @@
 package ru.ifmo.se.is_lab1.controller;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -141,6 +147,7 @@ public class HumanBeingViewController {
         Page<ImportOperationDto> historyPage = importOperationService.findHistory(PageRequest.of(0, 10));
         mav.addObject("importEndpoint", "/api/humans/import");
         mav.addObject("importHistoryEndpoint", "/api/humans/import/history");
+        mav.addObject("importFileEndpoint", "/humans/import/file");
         mav.addObject("importHistory", historyPage);
         mav.addObject("historyIsAdmin", currentUserService.isAdmin());
         mav.addObject("historyUsername", currentUserService.getCurrentUsername());
@@ -342,6 +349,15 @@ public class HumanBeingViewController {
             redirectAttributes.addFlashAttribute("success", String.format("Найдено %d совпадений по саундтрекам", matches.size()));
         }
         return "redirect:/humans";
+    }
+
+    @GetMapping("/import/file/{id}")
+    public ResponseEntity<InputStreamResource> downloadImportFile(@PathVariable("id") Long id) {
+        InputStream content = importOperationService.getFileContent(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"import_" + id + ".json\"")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new InputStreamResource(content));
     }
 
     private void populateReferenceData(Model model) {
