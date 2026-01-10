@@ -1,5 +1,7 @@
 package ru.ifmo.se.is_lab1.service;
 
+import java.io.InputStream;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,18 +18,27 @@ public class ImportOperationService {
 
     private final ImportOperationRepository importOperationRepository;
     private final CurrentUserService currentUserService;
+    private final FileStorageService fileStorageService;
 
     public ImportOperationService(ImportOperationRepository importOperationRepository,
-                                  CurrentUserService currentUserService) {
+                                  CurrentUserService currentUserService,
+                                  FileStorageService fileStorageService) {
         this.importOperationRepository = importOperationRepository;
         this.currentUserService = currentUserService;
+        this.fileStorageService = fileStorageService;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ImportOperation startOperation(String filePath) {
+        String initiator = currentUserService.getCurrentUsername();
+        ImportOperation operation = new ImportOperation(initiator, ImportOperation.Status.STARTED);
+        operation.setFilePath(filePath);
+        return importOperationRepository.save(operation);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ImportOperation startOperation() {
-        String initiator = currentUserService.getCurrentUsername();
-        ImportOperation operation = new ImportOperation(initiator, ImportOperation.Status.STARTED);
-        return importOperationRepository.save(operation);
+        return startOperation(null);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -59,5 +70,21 @@ public class ImportOperationService {
         String username = currentUserService.getCurrentUsername();
         Page<ImportOperation> page = importOperationRepository.findByInitiatorOrderByCreatedAtDesc(username, pageable);
         return page.map(ImportOperationDto::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public String getFilePath(Long operationId) {
+        ImportOperation operation = importOperationRepository.findById(operationId)
+                .orElseThrow(() -> new IllegalArgumentException("Import operation not found: " + operationId));
+        return operation.getFilePath();
+    }
+
+    @Transactional(readOnly = true)
+    public InputStream getFileContent(Long operationId) {
+        String filePath = getFilePath(operationId);
+        if (filePath == null) {
+            throw new IllegalArgumentException("No file associated with this operation");
+        }
+        return fileStorageService.downloadFile(filePath);
     }
 }

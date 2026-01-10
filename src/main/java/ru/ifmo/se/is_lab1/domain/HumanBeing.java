@@ -2,8 +2,11 @@ package ru.ifmo.se.is_lab1.domain;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,6 +31,8 @@ import ru.ifmo.se.is_lab1.model.WeaponType;
 
 @Entity
 @Table(name = "human_being")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class HumanBeing {
 
     @Id

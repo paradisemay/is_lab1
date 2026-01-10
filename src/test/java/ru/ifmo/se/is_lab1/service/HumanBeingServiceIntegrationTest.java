@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
+import ru.ifmo.se.is_lab1.config.TestConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ import ru.ifmo.se.is_lab1.service.event.HumanBeingEventPublisher;
 @SpringBootTest
 @Transactional
 @ContextConfiguration(initializers = HumanBeingServiceIntegrationTest.DataSourceInitializer.class)
+@Import(TestConfig.class)
 class HumanBeingServiceIntegrationTest {
 
     @Autowired
@@ -93,7 +96,8 @@ class HumanBeingServiceIntegrationTest {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
                     "spring.datasource.url=jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
                     "spring.jpa.hibernate.ddl-auto=update",
-                    "spring.flyway.enabled=false");
+                    "spring.flyway.enabled=false",
+                    "app.minio.enabled=false");
         }
     }
 }
