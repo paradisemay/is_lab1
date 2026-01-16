@@ -11,7 +11,7 @@
 
     <cache alias="ru.ifmo.se.is_lab1.domain.HumanBeing">
         <key-type>java.lang.Object</key-type>
-        <value-type>ru.ifmo.se.is_lab1.domain.HumanBeing</value-type>
+        <value-type>java.lang.Object</value-type>
         <expiry>
             <ttl unit="minutes">60</ttl>
         </expiry>
@@ -23,7 +23,7 @@
 
     <cache alias="ru.ifmo.se.is_lab1.domain.Car">
         <key-type>java.lang.Object</key-type>
-        <value-type>ru.ifmo.se.is_lab1.domain.Car</value-type>
+        <value-type>java.lang.Object</value-type>
         <expiry>
             <ttl unit="minutes">60</ttl>
         </expiry>
@@ -34,7 +34,7 @@
 
     <cache alias="ru.ifmo.se.is_lab1.domain.Coordinates">
         <key-type>java.lang.Object</key-type>
-        <value-type>ru.ifmo.se.is_lab1.domain.Coordinates</value-type>
+        <value-type>java.lang.Object</value-type>
         <expiry>
             <ttl unit="minutes">60</ttl>
         </expiry>
