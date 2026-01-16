@@ -61,7 +61,6 @@ public class HumanImportService {
     private final HumanBeingService humanBeingService;
     private final FileStorageService fileStorageService;
 
-    // Self-injection to allow internal method calls to go through proxy
     private final HumanImportService self;
 
     public HumanImportService(ObjectMapper objectMapper,
@@ -91,7 +90,6 @@ public class HumanImportService {
             throw new HumanImportException("Файл импорта не должен быть пустым");
         }
 
-        // 1. Upload to MinIO (First Phase of distributed transaction)
         String fileName = "import_" + UUID.randomUUID() + ".json";
         String uploadedFileKey;
         try (InputStream is = file.getInputStream()) {
@@ -102,16 +100,12 @@ public class HumanImportService {
             throw new HumanImportException("Failed to upload file to storage: " + e.getMessage(), e);
         }
 
-        // 2. Execute DB Transaction (Second Phase)
         try {
-            // Using self reference to ensure transaction proxy is used
             return self.processImportTransaction(uploadedFileKey);
         } catch (Exception e) {
-            // Compensation: Delete file if DB transaction failed
             try {
                 fileStorageService.deleteFile(uploadedFileKey);
             } catch (Exception deleteEx) {
-                // Log failure to compensate?
                 System.err.println("Failed to compensate (delete file) after transaction failure: " + deleteEx.getMessage());
             }
             throw e;
@@ -129,7 +123,6 @@ public class HumanImportService {
         var operation = importOperationService.startOperation(fileKey);
         try {
             List<HumanImportRecordDto> records;
-            // Read back from storage to ensure we are processing what was stored
             try (InputStream is = fileStorageService.downloadFile(fileKey)) {
                  records = objectMapper.readValue(is, new TypeReference<List<HumanImportRecordDto>>() {});
             } catch (IOException e) {
