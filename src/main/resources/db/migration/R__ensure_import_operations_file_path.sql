@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS import_operations
+    ADD COLUMN IF NOT EXISTS file_path VARCHAR(1024);
